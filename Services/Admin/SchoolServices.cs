@@ -72,6 +72,9 @@ namespace SchoolManagementApi.Services.Admin
 
     private async Task<SchoolTerm> AddTerm(string sessionId, TermDto termDto)
     {
+      var checkTerm = await CheckTermDates(sessionId, termDto.TermStarts, termDto.TermEnds);
+      if (!checkTerm)
+        return null;
       var term = new SchoolTerm
       {
         SchoolSessionId = sessionId,
@@ -82,6 +85,25 @@ namespace SchoolManagementApi.Services.Admin
       _context.SchoolTerms.Add(term);
       await _context.SaveChangesAsync();
       return term;
+    }
+
+    private async Task<bool> CheckTermDates(string sessionId, DateTime termStart, DateTime termEnd)
+    {
+      var session = await _context.SchoolSessions.FirstOrDefaultAsync(s => s.SchoolSessionId.ToString() == sessionId);
+      if (session == null)
+        return false;
+      try
+      {
+        if (termStart < session.SessionStarts || termEnd > session.SessionEnds)
+          return false; // term start falls outside of session
+        if (termEnd < session.SessionStarts || termEnd < termStart || termEnd > session.SessionEnds)
+          return false; // Term end falls outside session or before term start
+      }
+      catch (FormatException)
+      {
+        return false;
+      }
+      return true;
     }
 
     public async Task<List<School>> AllOrganizationScchools(string OrganizationUniqueId, int page, int pageSize)
