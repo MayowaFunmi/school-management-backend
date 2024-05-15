@@ -392,9 +392,11 @@ namespace SchoolManagementApi.Controllers
 
     [HttpPost]
     [Route("add-school-session")]
-    [Authorize(Policy = "AdminOrganizationAdmin")]
-    public async Task<IActionResult> AddSchoolSession(SessionDto sessionDto)
+    //[Authorize(Policy = "AdminOrganizationAdmin")]
+    public async Task<IActionResult> AddSchoolSession([FromBody] SessionDto sessionDto)
     {
+      if (string.IsNullOrEmpty(sessionDto.Name))
+        return BadRequest("session name cannot be empty");
       try
       {
         var session = await _schoolServices.AddSchoolSession(sessionDto);
@@ -423,7 +425,7 @@ namespace SchoolManagementApi.Controllers
 
     [HttpPost]
     [Route("add-school-terms")]
-    [Authorize(Policy = "AdminOrganizationAdmin")]
+    //[Authorize(Policy = "AdminOrganizationAdmin")]
     public async Task<IActionResult> AddSchoolTerms(SchoolTermDto schoolTermDto)
     {
       try
