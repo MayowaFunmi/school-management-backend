@@ -10,7 +10,6 @@ namespace SchoolManagementApi.Commands.Admin
   {
     public class AddSchoolSubjectCommand : IRequest<GenericResponse>
     {
-      public string? AdminId { get; set; }
       public string SubjectName { get; set; } = string.Empty;
       public List<string> SubjectNamesList { get; set;} = [];
     }
@@ -35,7 +34,8 @@ namespace SchoolManagementApi.Commands.Admin
             foreach (var subject in request.SubjectNamesList)
             {
               subjectList = await AddSubject(subject);
-              subjectListCreated.Add(subjectList);
+              if (subjectList != null)
+                subjectListCreated.Add(subjectList);
             }
           }
           else if (!string.IsNullOrEmpty(request.SubjectName) && request.SubjectNamesList.Count != 0)
@@ -46,7 +46,7 @@ namespace SchoolManagementApi.Commands.Admin
               Message = "Use oe option to add subject",
             };
           }
-          if (subjectCreated.SubjectId != Guid.Empty)
+          if (subjectCreated != null && subjectCreated.SubjectId != Guid.Empty)
           {
             return new GenericResponse
             {
@@ -85,7 +85,7 @@ namespace SchoolManagementApi.Commands.Admin
       {
         var subject = new Subject
         {
-          SubjectName = name
+          SubjectName = name.ToLower()
         };
         return await _subjectService.AddSubject(subject);
       }

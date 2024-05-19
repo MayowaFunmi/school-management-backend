@@ -16,7 +16,7 @@ namespace SchoolManagementApi.Controllers
 
     [HttpGet]
     [Route("get-all-users")]
-    [Authorize(Policy = "OwnerSuperAdmin")]
+    //[Authorize(Policy = "OwnerSuperAdmin")]
     public async Task<GenericResponse> ShowAllUsers()
     {
       var usersWithRoles = await _adminService.GetAllUsersWithRoles();
@@ -501,7 +501,6 @@ namespace SchoolManagementApi.Controllers
       {
         if (string.IsNullOrEmpty(CurrentUserId))
           return BadRequest("You are not authorized");
-        request.AdminId = CurrentUserId;
         var response = await _mediator.Send(request);
         return response.Status == HttpStatusCode.OK.ToString()
           ? Ok(response) : BadRequest(response);
