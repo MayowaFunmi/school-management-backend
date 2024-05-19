@@ -16,9 +16,15 @@ namespace SchoolManagementApi.Services.Admin
     {
       try
       {
-        var response = _context.Subjects.Add(subject);
-        await _context.SaveChangesAsync();
-        return response.Entity;
+        // check if subject already exists
+        var checkSubject = await _context.Subjects.FirstOrDefaultAsync(s => s.SubjectName == subject.SubjectName);
+        if (checkSubject == null)
+        {
+          var response = _context.Subjects.Add(subject);
+          await _context.SaveChangesAsync();
+          return response.Entity;
+        }
+        return null;
       }
       catch (Exception ex)
       {
