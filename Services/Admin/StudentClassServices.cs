@@ -6,6 +6,7 @@ using SchoolManagementApi.Intefaces.Admin;
 using SchoolManagementApi.Intefaces.LoggerManager;
 using SchoolManagementApi.Models;
 using SchoolManagementApi.Models.UserModels;
+using SchoolManagementApi.Queries.Students;
 using WatchDog;
 
 namespace SchoolManagementApi.Services.Admin
@@ -143,13 +144,6 @@ namespace SchoolManagementApi.Services.Admin
       try
       {
         var students = await _context.Students
-          // .Include(s => s.StudentClass)
-          // .Include(s => s.User)
-          // .Include(s => s.SchoolZone)
-          // .Include(s => s.CurrentSchool)
-          // .Include(s => s.Department)
-          // .Include(s => s.Parent)
-          // .Include(s => s.Documents)
           .Where(s => s.StudentClassId.ToString() == classId)
           .ToListAsync();
         return students;
@@ -248,6 +242,81 @@ namespace SchoolManagementApi.Services.Admin
     public async Task<StudentSubjectSCores> GetStudentSubjectSCores(string studentId)
     {
         throw new NotImplementedException();
+    }
+
+    public async Task<ClassAttendance> MarkStudentsAttendance(ClassAttendance classAttendance)
+    {
+      try
+      {
+        var attendance = _context.ClassAttendances.Add(classAttendance);
+        await _context.SaveChangesAsync();
+        return attendance.Entity;
+      }
+      catch (Exception ex)
+      {
+        _logger.LogError($"Error marking class attendance - {ex.Message}");
+        WatchLogger.LogError(ex.ToString(), $"Error marking class attendance- {ex.Message}");
+        throw;
+      }
+    }
+
+    public async Task<GetStudentAttendance.AttendanceStatus> GetStudentsAttendance(string classArmId, DateTime date)
+    {
+      try
+      {
+        var attendanceRecords = await _context.ClassAttendances
+          .Include(c => c.Student)
+          .Where(a => a.ClassArmId == classArmId && a.DayAndTime.Date == date.Date)
+          .ToListAsync();
+
+          var presentStudents = attendanceRecords
+            .Where(a => a.MorningAttendance == "Present" && a.AfternoonAttendance == "Present")
+            .Select(a => new GetStudentAttendance.StudentDto
+            {
+              StudentId = a.StudentId,
+              StudentUniqueId = a.Student.User.UniqueId,
+              LastName = a.Student.User.LastName,
+              FirstName = a.Student.User.FirstName,
+              MiddleName = a.Student.MiddleName
+            }).ToList();
+
+          var absentStudents = attendanceRecords
+            .Where(a => a.MorningAttendance == "Absent" && a.AfternoonAttendance == "Absent")
+            .Select(a => new GetStudentAttendance.StudentDto
+            {
+              StudentId = a.StudentId,
+              StudentUniqueId = a.Student.User.UniqueId,
+              LastName = a.Student.User.LastName,
+              FirstName = a.Student.User.FirstName,
+              MiddleName = a.Student.MiddleName
+            }).ToList();
+
+          var halfDayStudents = attendanceRecords
+            .Where(a => 
+              (a.MorningAttendance == "Present" && a.AfternoonAttendance == "Absent") || 
+              (a.MorningAttendance == "Absent" && a.AfternoonAttendance == "Present"))
+            .Select(a => new GetStudentAttendance.StudentDto
+            {
+              StudentId = a.StudentId,
+              StudentUniqueId = a.Student!.User!.UniqueId,
+              LastName = a.Student.User.LastName,
+              FirstName = a.Student.User.FirstName,
+              MiddleName = a.Student.MiddleName
+            }).ToList();
+
+          return new GetStudentAttendance.AttendanceStatus
+          {
+            PresentStudents = presentStudents,
+            AbsentStudents = absentStudents,
+            HalfDayStudents = halfDayStudents
+          };
+      }
+      catch (Exception ex)
+      {
+        _logger.LogError($"Error getting class attendance - {ex.Message}");
+        WatchLogger.LogError(ex.ToString(), $"Error getting class attendance- {ex.Message}");
+        throw;
+      }
     }
 
     private static Guid? AddDepartment(string armName, ApplicationDbContext dbContext)

@@ -37,6 +37,7 @@ namespace SchoolManagementApi.Services.Admin
         var session = new SchoolSession
         {
           Name = sessionDto.Name,
+          SchoolId = sessionDto.SchoolId,
           SessionStarts = sessionDto.SessionStarts,
           SessionEnds = sessionDto.SessionEnds
         };
@@ -367,11 +368,13 @@ namespace SchoolManagementApi.Services.Admin
       }
     }
 
-    public async Task<List<SchoolSession>> GetSchoolSessions()
+    public async Task<List<SchoolSession>> GetSchoolSessions(string schoolUniqueId)
     {
       try
       {
-        return await _context.SchoolSessions.ToListAsync();
+        return await _context.SchoolSessions
+          .Where(s => s.SchoolId == schoolUniqueId)
+          .ToListAsync();
       }
       catch (Exception ex)
       {
@@ -505,6 +508,23 @@ namespace SchoolManagementApi.Services.Admin
       {
         _logger.LogError($"Error searching for schools - {ex.Message}");
         WatchLogger.LogError(ex.ToString(), $"Error searching for schools - {ex.Message}");
+        throw;
+      }
+    }
+
+    public async Task<List<SchoolTerm>> GetSchoolTerms(string schoolId)
+    {
+      try
+      {
+        var schoolTerm = await _context.SchoolTerms
+          .Where(s => s.SchoolId == schoolId)
+          .ToListAsync();
+        return schoolTerm;
+      }
+      catch (Exception ex)
+      {
+        _logger.LogError($"Error getting school terms - {ex.Message}");
+        WatchLogger.LogError(ex.ToString(), $"Error getting school terms - {ex.Message}");
         throw;
       }
     }

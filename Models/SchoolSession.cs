@@ -6,8 +6,7 @@ namespace SchoolManagementApi.Models
   {
     [Key]
     public Guid SchoolSessionId { get; set; }
-    //public string SchoolId { get; set; } = string.Empty;
-    
+    public string SchoolId { get; set; } = string.Empty;  // School unique id
     public string Name { get; set; } = string.Empty;
     public DateTime SessionStarts { get; set; }
     public DateTime SessionEnds { get; set; }

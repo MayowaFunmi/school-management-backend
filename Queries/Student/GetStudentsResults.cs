@@ -42,11 +42,11 @@ namespace SchoolManagementApi.Queries.Students
           };
         }
         catch (Exception ex)
-      {
-        _logger.LogError($"Error getting results - {ex.Message}");
-        WatchLogger.LogError(ex.ToString(), $"Error getting results - {ex.Message}");
-        throw;
-      }
+        {
+          _logger.LogError($"Error getting results - {ex.Message}");
+          WatchLogger.LogError(ex.ToString(), $"Error getting results - {ex.Message}");
+          throw;
+        }
       }
     }
   }

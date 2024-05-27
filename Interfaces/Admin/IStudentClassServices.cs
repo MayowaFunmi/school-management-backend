@@ -2,6 +2,7 @@ using SchoolManagementApi.Commands.Students;
 using SchoolManagementApi.DTOs;
 using SchoolManagementApi.Models;
 using SchoolManagementApi.Models.UserModels;
+using static SchoolManagementApi.Queries.Students.GetStudentAttendance;
 
 namespace SchoolManagementApi.Intefaces.Admin
 {
@@ -17,5 +18,7 @@ namespace SchoolManagementApi.Intefaces.Admin
     Task<StudentsCARecord> AddStudentsCATest(AddStudentsCA.AddStudentsCACommand request);
     Task<List<ClassStudentsScores>> GetClassStudentsScores(string sessionId, string classId, string subjectId, string term);
     Task<StudentSubjectSCores> GetStudentSubjectSCores(string studentId);
+    Task<ClassAttendance> MarkStudentsAttendance(ClassAttendance classAttendance);
+    Task<AttendanceStatus> GetStudentsAttendance(string classArmId, DateTime date);
   }
 }

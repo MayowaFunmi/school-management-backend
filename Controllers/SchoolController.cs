@@ -395,8 +395,8 @@ namespace SchoolManagementApi.Controllers
     //[Authorize(Policy = "AdminOrganizationAdmin")]
     public async Task<IActionResult> AddSchoolSession([FromBody] SessionDto sessionDto)
     {
-      if (string.IsNullOrEmpty(sessionDto.Name))
-        return BadRequest("session name cannot be empty");
+      if (string.IsNullOrEmpty(sessionDto.Name) || string.IsNullOrEmpty(sessionDto.SchoolId))
+        return BadRequest("session name and school id cannot be empty");
       try
       {
         var session = await _schoolServices.AddSchoolSession(sessionDto);
@@ -409,12 +409,12 @@ namespace SchoolManagementApi.Controllers
     }
 
     [HttpGet]
-    [Route("get-school-session")]
-    public async Task<IActionResult> GetSchoolSession()
+    [Route("get-school-session/{schoolUniqueId}")]
+    public async Task<IActionResult> GetSchoolSession(string schoolUniqueId)
     {
       try
       {
-        var session = await _schoolServices.GetSchoolSessions();
+        var session = await _schoolServices.GetSchoolSessions(schoolUniqueId);
         return Ok(session);
       }
       catch (Exception ex)
@@ -436,6 +436,23 @@ namespace SchoolManagementApi.Controllers
           return Ok("Terms added successfully");
         }
         return BadRequest();
+      }
+      catch (Exception ex)
+      {
+        return StatusCode(500, $"An error occurred while processing your request - {ex.Message}");
+      }
+    }
+
+    [HttpGet]
+    [Route("get-school-term/{schoolid}")]
+    public async Task<IActionResult> GetSchoolTerm(string schoolid)
+    {
+      try
+      {
+        var terms = await _schoolServices.GetSchoolTerms(schoolid);
+        if (terms.Count == 0)
+          return NotFound("No terms found for this school");
+        return Ok(terms);
       }
       catch (Exception ex)
       {
