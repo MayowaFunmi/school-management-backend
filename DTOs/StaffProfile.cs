@@ -11,7 +11,7 @@ namespace SchoolManagementApi.DTOs
     public Guid StaffProfileId { get; set; }
     [ForeignKey("UserId")]
     public string UserId { get; set; } = string.Empty;
-    public virtual ApplicationUser? User { get; set; }
+    public virtual ApplicationUser User { get; set; } = null!;
     public string OrganizationUniqueId { get; set; } = string.Empty;
     public string Title { get; set; } = string.Empty;
     public string MiddleName { get; set; } = string.Empty;
@@ -28,20 +28,20 @@ namespace SchoolManagementApi.DTOs
     public string Designation { get; set; } = string.Empty;
     public int GradeLevel { get; set; }
     public int Step { get; set; }
-    public DateTime? FirstAppointment { get; set; }
+    public DateTime FirstAppointment { get; set; }
     public int YearsInService { get; set; }
-    public string? Qualification { get; set; }
+    public string Qualification { get; set; } = string.Empty;
     public string Discipline { get; set; } = string.Empty;
 
     [ForeignKey("CurrentPostingZoneId")]
     public Guid CurrentPostingZoneId { get; set; }
-    public virtual Zone? CurrentPostingZone { get; set; }
+    public virtual Zone CurrentPostingZone { get; set; } = null!;
 
     [ForeignKey("CurrentPostingSchoolId")]
-    public Guid? CurrentPostingSchoolId { get; set; }
-    public virtual School? CurrentPostingSchool { get; set; }
-    public virtual List<string>? PreviousSchoolsIds { get; set; }
-    public virtual IList<DocumentFile>? Documents { get; set;}
+    public Guid CurrentPostingSchoolId { get; set; }
+    public virtual School CurrentPostingSchool { get; set; } = null!;
+    public virtual List<string> PreviousSchoolsIds { get; set; } = [];
+    public virtual IList<DocumentFile> Documents { get; set;} = [];
     public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
     public DateTime UpdatedDate { get; set; }
   }

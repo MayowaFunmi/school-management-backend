@@ -1,4 +1,6 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
+using SchoolManagementApi.Constants;
 using SchoolManagementApi.Data;
 using SchoolManagementApi.Intefaces.Admin;
 using SchoolManagementApi.Intefaces.LoggerManager;
@@ -8,19 +10,26 @@ using WatchDog;
 
 namespace SchoolManagementApi.Services.Admin
 {
-  public class ZoneService(ApplicationDbContext context, ILoggerManager logger) : IZoneService
+  public class ZoneService(ApplicationDbContext context, ILoggerManager logger, IMemoryCache cache) : IZoneService
   {
     private readonly ApplicationDbContext _context = context;
     private readonly ILoggerManager _logger = logger;
+    private readonly IMemoryCache _cache = cache;
 
     public async Task<List<Zone>> AllOrganizationZones(string organizationId)
     {
       try
       {
-        var zones = await _context.Zones
-          .Include(x => x.Schools)
-          .Where(x => x.OrganizationId.ToString() == organizationId)
-          .ToListAsync();
+        if (!_cache.TryGetValue(CacheConstants.ZONES, out List<Zone>? zones))
+        {
+          zones = await _context.Zones
+            .Include(x => x.Schools)
+            .Where(x => x.OrganizationId.ToString() == organizationId)
+            .AsNoTracking()
+            .ToListAsync();
+          _cache.Set(CacheConstants.ZONES, zones);
+        }
+        zones ??= [];
         return zones;
       }
       catch (Exception ex)

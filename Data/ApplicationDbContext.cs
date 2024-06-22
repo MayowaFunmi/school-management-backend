@@ -25,7 +25,7 @@ namespace SchoolManagementApi.Data
     public DbSet<SchoolSession> SchoolSessions { get; set; }
     public DbSet<SchoolTerm> SchoolTerms { get; set; }
     public DbSet<StudentsScores> StudentsScores { get; set; }
-
+    public DbSet<ClassAttendance> ClassAttendances { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
       base.OnModelCreating(modelBuilder);

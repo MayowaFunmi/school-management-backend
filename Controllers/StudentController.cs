@@ -160,5 +160,41 @@ namespace SchoolManagementApi.Controllers
         return StatusCode(500, $"An error occurred while processing your request - {ex.Message}");
       }
     }
+
+    [HttpPost]
+    [Route("mark-student-class-attendance")]
+    [Authorize]
+    public async Task<IActionResult>MarkClassAttendance(ClassRegister.ClassRegisterCommand request)
+    {
+      try
+      {
+        var response = await _mediator.Send(request);
+        return response.Status == HttpStatusCode.OK.ToString()
+          ? Ok(response) : BadRequest(response);
+      }
+      catch (Exception ex)
+      {
+        return StatusCode(500, $"An error occurred while processing your request - {ex.Message}");
+      }
+    }
+
+    [HttpGet]
+    [Route("get-class-attendance")]
+    [Authorize]
+    public async Task<IActionResult> GetClassRegister(GetStudentAttendance.GetStudentAttendanceQuery request)
+    {
+      try
+      {
+        if (!string.IsNullOrEmpty(request.ClassArmId) || request.Date == default)
+          return BadRequest("Class arm and date cannot be null");
+        var response = await _mediator.Send(request);
+        return response.Status == HttpStatusCode.OK.ToString()
+          ? Ok(response) : BadRequest(response);
+      }
+      catch (Exception ex)
+      {
+        return StatusCode(500, $"An error occurred while processing your request - {ex.Message}");
+      }
+    }
   }
 }

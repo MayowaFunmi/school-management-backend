@@ -18,7 +18,7 @@ namespace SchoolManagementApi.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.2")
+                .HasAnnotation("ProductVersion", "8.0.6")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -189,6 +189,47 @@ namespace SchoolManagementApi.Migrations
                     b.ToTable("ClassArms");
                 });
 
+            modelBuilder.Entity("SchoolManagementApi.Models.ClassAttendance", b =>
+                {
+                    b.Property<Guid>("AttendanceId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("AfternoonAttendance")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("ClassArmId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("DayAndTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsMarked")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("MorningAttendance")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("StudentId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid?>("StudentId1")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("AttendanceId");
+
+                    b.HasIndex("StudentId1");
+
+                    b.ToTable("ClassAttendances");
+                });
+
             modelBuilder.Entity("SchoolManagementApi.Models.Department", b =>
                 {
                     b.Property<Guid>("DepartmentId")
@@ -352,6 +393,10 @@ namespace SchoolManagementApi.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("SchoolId")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -559,6 +604,12 @@ namespace SchoolManagementApi.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime>("LastLogin")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("LastName")
                         .IsRequired()
                         .HasColumnType("text");
@@ -568,6 +619,9 @@ namespace SchoolManagementApi.Migrations
 
                     b.Property<DateTimeOffset?>("LockoutEnd")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("LoginCount")
+                        .HasColumnType("integer");
 
                     b.Property<string>("NormalizedEmail")
                         .HasMaxLength(256)
@@ -642,7 +696,7 @@ namespace SchoolManagementApi.Migrations
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<Guid?>("CurrentPostingSchoolId")
+                    b.Property<Guid>("CurrentPostingSchoolId")
                         .HasColumnType("uuid");
 
                     b.Property<Guid>("CurrentPostingZoneId")
@@ -659,7 +713,7 @@ namespace SchoolManagementApi.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<DateTime?>("FirstAppointment")
+                    b.Property<DateTime>("FirstAppointment")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Gender")
@@ -686,6 +740,7 @@ namespace SchoolManagementApi.Migrations
                         .HasColumnType("text");
 
                     b.Property<List<string>>("PreviousSchoolsIds")
+                        .IsRequired()
                         .HasColumnType("text[]");
 
                     b.Property<string>("ProfilePicture")
@@ -693,6 +748,7 @@ namespace SchoolManagementApi.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("Qualification")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Religion")
@@ -775,6 +831,7 @@ namespace SchoolManagementApi.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("ProfilePicture")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("RelationshipType")
@@ -793,6 +850,7 @@ namespace SchoolManagementApi.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<string>("Title")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<DateTime>("UpdatedAt")
@@ -921,7 +979,7 @@ namespace SchoolManagementApi.Migrations
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<Guid?>("CurrentPostingSchoolId")
+                    b.Property<Guid>("CurrentPostingSchoolId")
                         .HasColumnType("uuid");
 
                     b.Property<Guid>("CurrentPostingZoneId")
@@ -941,7 +999,7 @@ namespace SchoolManagementApi.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<DateTime?>("FirstAppointment")
+                    b.Property<DateTime>("FirstAppointment")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Gender")
@@ -968,9 +1026,11 @@ namespace SchoolManagementApi.Migrations
                         .HasColumnType("text");
 
                     b.Property<List<string>>("OtherSubjects")
+                        .IsRequired()
                         .HasColumnType("text[]");
 
                     b.Property<List<string>>("PreviousSchoolsIds")
+                        .IsRequired()
                         .HasColumnType("text[]");
 
                     b.Property<string>("ProfilePicture")
@@ -978,9 +1038,11 @@ namespace SchoolManagementApi.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("PublishedWork")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Qualification")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Religion")
@@ -1123,6 +1185,15 @@ namespace SchoolManagementApi.Migrations
                     b.Navigation("Department");
                 });
 
+            modelBuilder.Entity("SchoolManagementApi.Models.ClassAttendance", b =>
+                {
+                    b.HasOne("SchoolManagementApi.Models.UserModels.Student", "Student")
+                        .WithMany()
+                        .HasForeignKey("StudentId1");
+
+                    b.Navigation("Student");
+                });
+
             modelBuilder.Entity("SchoolManagementApi.Models.Department", b =>
                 {
                     b.HasOne("SchoolManagementApi.Models.School", null)
@@ -1243,7 +1314,9 @@ namespace SchoolManagementApi.Migrations
                 {
                     b.HasOne("SchoolManagementApi.Models.School", "CurrentPostingSchool")
                         .WithMany()
-                        .HasForeignKey("CurrentPostingSchoolId");
+                        .HasForeignKey("CurrentPostingSchoolId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("SchoolManagementApi.Models.Zone", "CurrentPostingZone")
                         .WithMany()
@@ -1338,7 +1411,9 @@ namespace SchoolManagementApi.Migrations
                 {
                     b.HasOne("SchoolManagementApi.Models.School", "CurrentPostingSchool")
                         .WithMany()
-                        .HasForeignKey("CurrentPostingSchoolId");
+                        .HasForeignKey("CurrentPostingSchoolId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("SchoolManagementApi.Models.Zone", "CurrentPostingZone")
                         .WithMany()

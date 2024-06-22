@@ -1,5 +1,7 @@
 using System.Net;
 using MediatR;
+using Microsoft.Extensions.Caching.Memory;
+using SchoolManagementApi.Constants;
 using SchoolManagementApi.DTOs;
 using SchoolManagementApi.Intefaces.Admin;
 
@@ -16,10 +18,10 @@ namespace SchoolManagementApi.Commands.Admin
       public List<string>? LocalGovtAreas { get; set; }
     }
 
-    public class CreateZoneHandler(IZoneService zoneService) : IRequestHandler<CreateZoneCommand, GenericResponse>
+    public class CreateZoneHandler(IZoneService zoneService, IMemoryCache cache) : IRequestHandler<CreateZoneCommand, GenericResponse>
     {
       private readonly IZoneService _zoneService = zoneService;
-
+      private readonly IMemoryCache _cache = cache;
       public async Task<GenericResponse> Handle(CreateZoneCommand request, CancellationToken cancellationToken)
       {
         var organizationId = await _zoneService.OrganizationExists(request.OrganizationUniqueId!, request.AdminId!);
@@ -43,6 +45,7 @@ namespace SchoolManagementApi.Commands.Admin
         var response = await _zoneService.CreateZone(zone);
         if (response != null)
         {
+          _cache.Remove(CacheConstants.ZONES);          
           return new GenericResponse
           {
             Status = HttpStatusCode.OK.ToString(),

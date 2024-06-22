@@ -16,7 +16,7 @@ namespace SchoolManagementApi.Controllers
 
     [HttpGet]
     [Route("get-all-users")]
-    //[Authorize(Policy = "OwnerSuperAdmin")]
+    [Authorize(Policy = "OwnerSuperAdmin")]
     public async Task<GenericResponse> ShowAllUsers()
     {
       var usersWithRoles = await _adminService.GetAllUsersWithRoles();

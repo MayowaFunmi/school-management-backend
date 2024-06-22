@@ -7,7 +7,7 @@ namespace SchoolManagementApi.Intefaces.Admin
   {
     Task<List<UserWithRoles>> GetAllUsersWithRoles();
     Task<OrganizationUserCount> OrganizationUsersByRole(string organizationId, string roleName, int page, int pageSize);
-    Task<UserWithRoles> GetUserByUniqueId(string uniqueId, string userRole);
+    Task<UserWithRoles> GetUserByUniqueId(string uniqueId, string? userRole);
     Task<List<Subject>> GetSubjectsInSchool();
   }
 }

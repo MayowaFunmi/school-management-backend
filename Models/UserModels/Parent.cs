@@ -10,13 +10,13 @@ namespace SchoolManagementApi.Models.UserModels
     public Guid ParentId { get; set; }
     [ForeignKey("UserId")]
     public string UserId { get; set; } = string.Empty;
-    public virtual ApplicationUser? User { get; set; }
+    public virtual ApplicationUser User { get; set; } = null!;
     public string OrganizationUniqueId { get; set; } = string.Empty;
     [ForeignKey("StudentSchoolId")]
     public Guid StudentSchoolId { get; set; }
-    public virtual School? StudentSchool { get; set; }
-    public string? Title { get; set; }
-    public string? ProfilePicture { get; set; }
+    public virtual School StudentSchool { get; set; } = null!;
+    public string Title { get; set; } = string.Empty;
+    public string ProfilePicture { get; set; } = string.Empty;
     public string Gender { get; set; } = string.Empty;
     public DateTime DateOfBirth { get; set; }
     public int Age { get; set; }
