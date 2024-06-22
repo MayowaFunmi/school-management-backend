@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
+using SchoolManagementApi.Constants;
 using SchoolManagementApi.Data;
 using SchoolManagementApi.DTOs;
 using SchoolManagementApi.Intefaces.Admin;
@@ -19,7 +21,8 @@ namespace SchoolManagementApi.Services.Admin
         ITeachingStaffInterface teachingStaffInterface,
         INonTeachingStaffInterface nonTeachingStaffInterface,
         IParentService parentService,
-        IStudentService studentService
+        IStudentService studentService,
+        IMemoryCache cache
         ) : IAdminService
     {
         private readonly ApplicationDbContext _context = context;
@@ -30,28 +33,31 @@ namespace SchoolManagementApi.Services.Admin
         private readonly INonTeachingStaffInterface _nonTeachingStaffInterface = nonTeachingStaffInterface;
         private readonly IParentService _parentService = parentService;
         private readonly IStudentService _studentService = studentService;
+        private readonly IMemoryCache _cache = cache;
         public async Task<List<UserWithRoles>> GetAllUsersWithRoles()   // for superadmin and owner
         {
             try
             {
-                List<UserWithRoles> userWithRoles = [];
-                var allusers = await _userManager.Users
-                    ///.Include(u => u.Organization)
-                    .ToListAsync();
-                foreach (var user in allusers)
+                if (!_cache.TryGetValue(CacheConstants.USERS, out List<UserWithRoles>? userWithRoles))
                 {
-                    var roles = await _userManager.GetRolesAsync(user);
-                    // var userRoles = new List<IdentityRole>();
-                    // foreach (var roleName in roles)
-                    // {
-                    //     var role = await _roleManager.FindByNameAsync(roleName);
-                    //     userRoles.Add(role);
-                    // }
-                    userWithRoles.Add(new UserWithRoles
+                    userWithRoles = [];
+                    var allusers = await _userManager.Users
+                                                    .AsNoTracking()
+                                                    .ToListAsync();
+                    foreach (var user in allusers)
                     {
-                        User = user,
-                        UserRoles = roles
-                    });
+                        var roles = await _userManager.GetRolesAsync(user);
+                        userWithRoles.Add(new UserWithRoles
+                        {
+                            User = user,
+                            UserRoles = roles
+                        });
+                    }
+                    _cache.Set(CacheConstants.USERS, userWithRoles);
+                }
+                else
+                {
+                    userWithRoles ??= [];
                 }
                 return userWithRoles;
             }
@@ -63,7 +69,7 @@ namespace SchoolManagementApi.Services.Admin
             }
         }
 
-        public async Task<UserWithRoles> GetUserByUniqueId(string uniqueId, string? userRole = "")
+        public async Task<UserWithRoles> GetUserByUniqueId(string uniqueId, string? userRole)
         {
             try
             {
@@ -111,7 +117,7 @@ namespace SchoolManagementApi.Services.Admin
                         AdminNonTeacher = adminNonTeacher
                     };
                 }
-                return null;
+                return new UserWithRoles();
             }
             catch (Exception ex)
             {

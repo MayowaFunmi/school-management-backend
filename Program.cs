@@ -43,8 +43,9 @@ builder.Services.AddHangfire(x =>
     x.UsePostgreSqlStorage(connectionString));
 
 builder.Services.AddHangfireServer();
-
-
+builder.Services.AddMemoryCache(options => {
+    options.ExpirationScanFrequency = TimeSpan.FromHours(10);
+});
 
 IConfigurationSection cloudinaryConfig = builder.Configuration.GetSection("Cloudinary");
 Account cloudinaryAccount = new(
@@ -64,31 +65,42 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
-    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
     {
-        Description = "JWT aUTHORIZATION HEADER USING TOKEN",
+        Description = "Standard Authorization Header Using the Bearer Scheme (\"Bearer {token}\")",
         In = ParameterLocation.Header,
-        BearerFormat = "JWT",
         Name = "Authorization",
-        Type = SecuritySchemeType.Http,
-        Scheme = "Bearer"
-    });
-    options.AddSecurityRequirement(new OpenApiSecurityRequirement
-    {
-        {
-            new OpenApiSecurityScheme
-            {
-                Reference = new OpenApiReference
-                {
-                    Type = ReferenceType.SecurityScheme,
-                    Id = "Bearer"
-                }
-            },
-            Array.Empty<string>()
-        }
+        Type = SecuritySchemeType.ApiKey
     });
     options.OperationFilter<SecurityRequirementsOperationFilter>();
 });
+// builder.Services.AddSwaggerGen(options =>
+// {
+//     options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+//     {
+//         Description = "JWT aUTHORIZATION HEADER USING TOKEN",
+//         In = ParameterLocation.Header,
+//         BearerFormat = "JWT",
+//         Name = "Authorization",
+//         Type = SecuritySchemeType.Http,
+//         Scheme = "Bearer"
+//     });
+//     options.AddSecurityRequirement(new OpenApiSecurityRequirement
+//     {
+//         {
+//             new OpenApiSecurityScheme
+//             {
+//                 Reference = new OpenApiReference
+//                 {
+//                     Type = ReferenceType.SecurityScheme,
+//                     Id = "Bearer"
+//                 }
+//             },
+//             Array.Empty<string>()
+//         }
+//     });
+//     options.OperationFilter<SecurityRequirementsOperationFilter>();
+// });
 
 builder.Services.Configure<IdentityOptions>(options =>
 {

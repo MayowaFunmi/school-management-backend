@@ -4,6 +4,7 @@ using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.IdentityModel.Tokens;
 using SchoolManagementApi.Configurations;
 using SchoolManagementApi.Constants;
@@ -13,10 +14,11 @@ using SchoolManagementApi.Utilities;
 
 namespace SchoolManagementApi.Controllers
 {
-  public class AuthController(UserManager<ApplicationUser> userManager, IConfiguration configuration) : BaseController
+  public class AuthController(UserManager<ApplicationUser> userManager, IConfiguration configuration, IMemoryCache cache) : BaseController
   {
     private readonly UserManager<ApplicationUser> _userManager = userManager;
     private readonly IConfiguration _configuration = configuration;
+    private readonly IMemoryCache _cache = cache;
 
     // register users
     [HttpPost]
@@ -75,6 +77,7 @@ namespace SchoolManagementApi.Controllers
         };
       }
       await _userManager.AddToRolesAsync(newUser, [StaticUserRoles.Users, registerDto.Role]);
+      _cache.Remove(CacheConstants.USERS);
       return new GenericResponse
       {
         Status = HttpStatusCode.OK.ToString(),
@@ -112,19 +115,14 @@ namespace SchoolManagementApi.Controllers
       {
         authClaims.Add(new Claim(ClaimTypes.Role, userRole));
       }
-      // {
-      //   var role = await _roleManager.FindByNameAsync(userRole);
-      //   if (role != null)
-      //   {
-      //     authClaims.Add(new Claim(ClaimTypes.Role, role.Id));
-      //   }
-      // }
-
+      
       var token = GenerateJsonWebToken(authClaims);
       Response.Headers.Authorization = "Bearer " + token;
+      user.LoginCount ++;
+      user.LastLogin = DateTime.UtcNow;
+      await _userManager.UpdateAsync(user);
       return Ok(token);
     }
-
 
 
     private string GenerateJsonWebToken(List<Claim> claims)
@@ -138,15 +136,6 @@ namespace SchoolManagementApi.Controllers
       };
       var authSecret = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt.Secret));
 
-      // var tokenObject = new JwtSecurityToken(
-      //   issuer: jwt.Issuer,
-      //   audience: jwt.Audience,
-      //   expires: jwt.Lifetime,
-      //   claims: claims,
-      //   signingCredentials: new SigningCredentials(authSecret, SecurityAlgorithms.HmacSha256)
-      // );
-      // string token = new JwtSecurityTokenHandler().WriteToken(tokenObject);
-      // return token;
       var tokenDescriptor = new SecurityTokenDescriptor
       {
         Issuer = jwt.Issuer,

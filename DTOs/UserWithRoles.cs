@@ -5,9 +5,8 @@ namespace SchoolManagementApi.DTOs
 {
   public class UserWithRoles
   {
-    public ApplicationUser User { get; set; }
-    //public List<IdentityRole> UserRoles { get; set; }
-    public IList<string> UserRoles { get; set; }
+    public ApplicationUser User { get; set; } = null!;
+    public IList<string> UserRoles { get; set; } = [];
     public TeachingStaff? TeacherProfile { get; set; }
     public NonTeachingStaff? NonTeacherProfile { get; set; }
     public TeachingStaff? AdminTeacher { get; set; }
