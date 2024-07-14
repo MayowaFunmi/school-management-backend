@@ -27,13 +27,21 @@ namespace SchoolManagementApi.Commands.Admin
           var subjectListCreated = new List<Subject>();
           if (!string.IsNullOrEmpty(request.SubjectName) && request.SubjectNamesList.Count == 0)
           {
-            subjectCreated = await AddSubject(request.SubjectName);
+            subjectCreated = await _subjectService.AddSubject(request.SubjectName);
+            if (subjectCreated == null)
+            {
+              return new GenericResponse
+              {
+                Status = HttpStatusCode.BadRequest.ToString(),
+                Message = $"{request.SubjectName} already exist",
+              };
+            }
           }
           else if (string.IsNullOrEmpty(request.SubjectName) && request.SubjectNamesList.Count != 0)
           {
             foreach (var subject in request.SubjectNamesList)
             {
-              subjectList = await AddSubject(subject);
+              subjectList = await _subjectService.AddSubject(subject);
               if (subjectList != null)
                 subjectListCreated.Add(subjectList);
             }
@@ -43,7 +51,7 @@ namespace SchoolManagementApi.Commands.Admin
             return new GenericResponse
             {
               Status = HttpStatusCode.BadRequest.ToString(),
-              Message = "Use oe option to add subject",
+              Message = "Use one option to add subject",
             };
           }
           if (subjectCreated != null && subjectCreated.SubjectId != Guid.Empty)
@@ -52,7 +60,6 @@ namespace SchoolManagementApi.Commands.Admin
             {
               Status = HttpStatusCode.OK.ToString(),
               Message = "School subject created successfully",
-              Data = subjectCreated
             };
           }
 
@@ -62,7 +69,6 @@ namespace SchoolManagementApi.Commands.Admin
             {
               Status = HttpStatusCode.OK.ToString(),
               Message = "School subject list created successfully",
-              Data = subjectListCreated
             };
           }
           return new GenericResponse
@@ -79,15 +85,6 @@ namespace SchoolManagementApi.Commands.Admin
             Message = $"An internal server error occurred - {ex.Message}"
           };
         }
-      }
-
-      private async Task<Subject> AddSubject(string name)
-      {
-        var subject = new Subject
-        {
-          SubjectName = name.ToLower()
-        };
-        return await _subjectService.AddSubject(subject);
       }
     }
   }

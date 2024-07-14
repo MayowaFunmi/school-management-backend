@@ -27,7 +27,7 @@ namespace SchoolManagementApi.Commands.Uploads
         try
         {
           // check if user profile exist
-          var staff = await _context.TeachingStaffs.FirstOrDefaultAsync(t => t.UserId == request.StaffId);
+          var staff = await _context.TeachingStaffs.FirstOrDefaultAsync(t => t.UserId == request.StaffId, cancellationToken: cancellationToken);
           if (staff == null)
           {
             return new GenericResponse

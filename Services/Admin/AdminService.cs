@@ -146,8 +146,8 @@ namespace SchoolManagementApi.Services.Admin
             try
             {
                 var usersInOrganization = await _userManager.Users
-                    //.Include(u => u.Organization)
                     .Where(u => u.OrganizationId == organizationId)
+                    .AsNoTracking()
                     .ToListAsync();
                 
                 // get the role with the specified name
@@ -156,6 +156,7 @@ namespace SchoolManagementApi.Services.Admin
                 // get the ids of users with the specified role
                 var userIdsInRole = await _context.UserRoles
                     .Where(ur => ur.RoleId == role.Id)
+                    .AsNoTracking()
                     .Select(ur => ur.UserId)
                     .ToListAsync();
 

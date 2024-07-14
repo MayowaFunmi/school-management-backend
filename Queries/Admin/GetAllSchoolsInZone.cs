@@ -7,51 +7,44 @@ namespace SchoolManagementApi.Queries.Admin
 {
   public class GetAllSchoolsInZone
   {
-    public class GetAllSchoolsInZoneQuery : IRequest<GenericResponse>
+    public class GetAllSchoolsInZoneQuery : IRequest<PageDataResponse>
     {
       public string ZoneId { get; set; } = string.Empty;
       public int Page { get; set; } = 0;
       public int PageSize { get; set; } = 0;
     }
 
-    public class GetAllSchoolsInZoneHandler(ISchoolServices schoolServices) : IRequestHandler<GetAllSchoolsInZoneQuery, GenericResponse>
+    public class GetAllSchoolsInZoneHandler(ISchoolServices schoolServices) : IRequestHandler<GetAllSchoolsInZoneQuery, PageDataResponse>
     {
       private readonly ISchoolServices _schoolServices = schoolServices;
 
-      public async Task<GenericResponse> Handle(GetAllSchoolsInZoneQuery request, CancellationToken cancellationToken)
+      public async Task<PageDataResponse> Handle(GetAllSchoolsInZoneQuery request, CancellationToken cancellationToken)
       {
-        int totalSchoolCount = await _schoolServices.AllSchoolsInZoneCount(request.ZoneId);
-        int totalPages = 1;
-        if (request.Page != 0 || request.PageSize != 0)
-          totalPages = (int)Math.Ceiling((double)totalSchoolCount / request.PageSize);
         try
         {
+          int totalSchoolCount = await _schoolServices.AllSchoolsInZoneCount(request.ZoneId);
           var schools = await _schoolServices.AllZoneScchools(request.ZoneId, request.Page, request.PageSize);
+          var paginationMetaData = new PaginationMetaData(request.Page, request.PageSize, totalSchoolCount);
+
           if (schools.Count != 0)
           {
-            var response = new PaginationResponse
-            {
-              Schools = schools,
-              TotalPages = totalPages,
-              CurrentPage = request.Page,
-              PagesLeft = totalPages - request.Page,
-            };
-            return new GenericResponse
+            return new PageDataResponse
             {
               Status = HttpStatusCode.OK.ToString(),
-              Message = $"{schools.Count} schools retrieved for zone with id {request.ZoneId}",
-              Data = response
+              Message = "Schools in zones retrieved successfully",
+              Data = schools,
+              Pagination = paginationMetaData
             };
           }
-          return new GenericResponse
+          return new PageDataResponse
           {
-            Status = HttpStatusCode.OK.ToString(),
-            Message = $"No school found for zone with id {request.ZoneId}",
+            Status = HttpStatusCode.NotFound.ToString(),
+            Message = "No school found in this zone"
           };
         }
         catch (Exception ex)
         {
-          return new GenericResponse
+          return new PageDataResponse
           {
             Status = HttpStatusCode.InternalServerError.ToString(),
             Message = $"An internal server error occurred - {ex.Message}"

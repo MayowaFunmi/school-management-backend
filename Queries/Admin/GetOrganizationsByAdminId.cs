@@ -20,15 +20,6 @@ namespace SchoolManagementApi.Queries.Admin
       {
         try
         {
-          if (string.IsNullOrEmpty(request.AdminId))
-          {
-            return new GenericResponse
-            {
-              Status = HttpStatusCode.Unauthorized.ToString(),
-              Message = "You are not authorized",
-            };
-          }
-
           var organizations = await _organizationService.RetrieveAdminOrganizations(request.AdminId);
           if (organizations.Count == 0)
           {

@@ -75,8 +75,8 @@ namespace SchoolManagementApi.Commands.Students
           StudentId = model.StudentId,
           ClassArmId = classArmId,
           DayAndTime = dayAndTime,
-          MorningAttendance = model.MorningAttendance,
-          AfternoonAttendance = model.AfternoonAttendance,
+          MorningAttendance = model.MorningAttendance.ToLower(),
+          AfternoonAttendance = model.AfternoonAttendance.ToLower(),
           IsMarked = true
         };
         var attendance = await _studentClassServices.MarkStudentsAttendance(classAttendance);

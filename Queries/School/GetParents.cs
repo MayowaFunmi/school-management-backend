@@ -7,54 +7,44 @@ namespace SchoolManagementApi.Queries.School
 {
   public class GetParents
   {
-    public class GetParentsQuery : IRequest<GenericResponse>
+    public class GetParentsQuery : IRequest<PageDataResponse>
     {
       public string SchoolId { get; set; } = string.Empty;
       public int Page { get; set; } = 0;
       public int PageSize { get; set; } = 0;
     }
 
-    public class GetParentsHandler(ISchoolServices schoolServices) : IRequestHandler<GetParentsQuery, GenericResponse>
+    public class GetParentsHandler(ISchoolServices schoolServices) : IRequestHandler<GetParentsQuery, PageDataResponse>
     {
       private readonly ISchoolServices _schoolServices = schoolServices;
 
-      public async Task<GenericResponse> Handle(GetParentsQuery request, CancellationToken cancellationToken)
+      public async Task<PageDataResponse> Handle(GetParentsQuery request, CancellationToken cancellationToken)
       {
-        var parentsCount = await _schoolServices.GetParentsInSchoolCount(request.SchoolId);
-        int totalPages = 1;
-        if (request.Page != 0 || request.PageSize != 0)
-          totalPages = (int)Math.Ceiling((double)parentsCount / request.PageSize);
-        
-        request.Page = Math.Min(Math.Max(request.Page, 1), totalPages);
-
         try
         {
+          var parentsCount = await _schoolServices.GetParentsInSchoolCount(request.SchoolId);
           var parents = await _schoolServices.GetParentsInSchool(request.SchoolId, request.Page, request.PageSize);
+          var paginationMetaData = new PaginationMetaData(request.Page, request.PageSize, parentsCount);
+
           if (parents.Count != 0)
           {
-            var response = new PageRespnses.ParentsPageResponse
-            {
-              Parents = parents,
-              TotalPages = totalPages,
-              CurrentPage = request.Page,
-              PagesLeft = totalPages - request.Page
-            };
-            return new GenericResponse
+            return new PageDataResponse
             {
               Status = HttpStatusCode.OK.ToString(),
-              Message = $"{parents.Count} parents retrieved succesfully",
-              Data = response
+              Message = "Parents in school retrieved successfully",
+              Data = parents,
+              Pagination = paginationMetaData
             };
           }
-          return new GenericResponse
+          return new PageDataResponse
           {
-            Status = HttpStatusCode.OK.ToString(),
-            Message = $"No parents found in this school",
+            Status = HttpStatusCode.NotFound.ToString(),
+            Message = "No parent found in school",
           };
         }
         catch (Exception ex)
         {
-          return new GenericResponse
+          return new PageDataResponse
           {
             Status = HttpStatusCode.InternalServerError.ToString(),
             Message = $"An internal server error occurred - {ex.Message}"

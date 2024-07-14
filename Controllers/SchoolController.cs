@@ -292,7 +292,7 @@ namespace SchoolManagementApi.Controllers
         var response = await _mediator.Send(request);
         return response.Status == HttpStatusCode.OK.ToString()
           ? Ok(response)
-          : BadRequest(response);
+          : NotFound(response);
       }
       catch (Exception ex)
       {
@@ -322,7 +322,7 @@ namespace SchoolManagementApi.Controllers
         var response = await _mediator.Send(request);
         return response.Status == HttpStatusCode.OK.ToString()
           ? Ok(response)
-          : BadRequest(response);
+          : NotFound(response);
       }
       catch (Exception ex)
       {
@@ -352,7 +352,7 @@ namespace SchoolManagementApi.Controllers
         var response = await _mediator.Send(request);
         return response.Status == HttpStatusCode.OK.ToString()
           ? Ok(response)
-          : BadRequest(response);
+          : NotFound(response);
       }
       catch (Exception ex)
       {
