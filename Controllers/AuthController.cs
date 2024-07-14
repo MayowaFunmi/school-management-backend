@@ -4,6 +4,7 @@ using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.IdentityModel.Tokens;
 using SchoolManagementApi.Configurations;
@@ -30,26 +31,29 @@ namespace SchoolManagementApi.Controllers
         return new GenericResponse
         {
           Status = HttpStatusCode.BadRequest.ToString(),
-          Message = "current user is already logged in"
+          Message = "User is already logged in"
         };
       }
-      var isUsernameExists = await _userManager.FindByNameAsync(registerDto.UserName);
-      var isEmailExists = await _userManager.FindByEmailAsync(registerDto.Email);
-
-      if (isUsernameExists != null)
+      var isUsernameExists = await _userManager.Users
+                                  .AsNoTracking()
+                                  .AnyAsync(u => u.UserName == registerDto.UserName);
+      var isEmailExists = await _userManager.Users
+                                  .AsNoTracking()
+                                  .AnyAsync(u => u.Email == registerDto.Email);
+      if (isUsernameExists)
       {
         return new GenericResponse
         {
-          Status = HttpStatusCode.OK.ToString(),
+          Status = HttpStatusCode.Conflict.ToString(),
           Message = $"{registerDto.UserName} is already registered. Try to login or click on forgot password"
         };
       }
 
-      if (isEmailExists != null)
+      if (isEmailExists)
       {
         return new GenericResponse
         {
-          Status = HttpStatusCode.OK.ToString(),
+          Status = HttpStatusCode.Conflict.ToString(),
           Message = $"{registerDto.Email} is already registered. Try to login or click on forgot password"
         };
       }
@@ -82,7 +86,6 @@ namespace SchoolManagementApi.Controllers
       {
         Status = HttpStatusCode.OK.ToString(),
         Message = "User Created successfully",
-        Data = registerDto
       };
     }
 
@@ -108,7 +111,6 @@ namespace SchoolManagementApi.Controllers
         new(ClaimTypes.Name, user.UserName!),
         new(ClaimTypes.NameIdentifier, user.Id.ToString()),
         new(ClaimTypes.Email, user.Email!),
-        new("JWTID", Guid.NewGuid().ToString())
       };
 
       foreach (var userRole in userRoles)

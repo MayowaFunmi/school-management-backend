@@ -116,12 +116,14 @@ namespace SchoolManagementApi.Services.Admin
         {
           schools = await _context.Schools
           .Where(s => s.OrganizationUniqueId == OrganizationUniqueId)
+          .AsNoTracking()
           .ToListAsync();
         }
         else
         {
           schools = await _context.Schools
           .Where(s => s.OrganizationUniqueId == OrganizationUniqueId)
+          .AsNoTracking()
           .Include(s => s.Departments)
           .Include(s => s.StudentClasses)
           .Include(s => s.Zone)
@@ -142,7 +144,7 @@ namespace SchoolManagementApi.Services.Admin
 
     public async Task<int> AllOrganizationSchoolsCount(string OrganizationUniqueId)
     {
-      return await _context.Schools.Where(s => s.OrganizationUniqueId == OrganizationUniqueId).CountAsync();
+      return await _context.Schools.Where(s => s.OrganizationUniqueId == OrganizationUniqueId).AsNoTracking().CountAsync();
     }
 
     public async Task<List<School>> AllScchools(int page, int pageSize)
@@ -155,6 +157,7 @@ namespace SchoolManagementApi.Services.Admin
           .Skip((page - 1) * pageSize)
           .Take(pageSize)
           .OrderBy(s => s.Name)
+          .AsNoTracking()
           .ToListAsync();
         return schools;
       }
@@ -168,12 +171,12 @@ namespace SchoolManagementApi.Services.Admin
 
     public async Task<int> AllSchoolCount()
     {
-      return await _context.Schools.CountAsync();
+      return await _context.Schools.AsNoTracking().AsNoTracking().CountAsync();
     }
 
     public async Task<int> AllSchoolsInZoneCount(string ZoneId)
     {
-      return await _context.Schools.Where(s => s.ZoneId.ToString() == ZoneId).CountAsync();
+      return await _context.Schools.Where(s => s.ZoneId.ToString() == ZoneId).AsNoTracking().CountAsync();
     }
 
     public async Task<List<School>> AllZoneScchools(string ZoneId, int page, int pageSize)
@@ -185,6 +188,7 @@ namespace SchoolManagementApi.Services.Admin
         {
           schools = await _context.Schools
             .Where(s => s.ZoneId.ToString() == ZoneId)
+            .AsNoTracking()
             .ToListAsync();
         }
         else
@@ -196,6 +200,7 @@ namespace SchoolManagementApi.Services.Admin
           .Skip((page - 1) * pageSize)
           .Take(pageSize)
           .OrderBy(s => s.Name)
+          .AsNoTracking()
           .ToListAsync();
         }
         return schools;
@@ -296,6 +301,7 @@ namespace SchoolManagementApi.Services.Admin
           .Skip((page - 1) * pageSize)
           .Take(pageSize)
           .OrderBy(s => s.User.LastName)
+          .AsNoTracking()
           .ToListAsync();
 
         return parents;
@@ -324,7 +330,8 @@ namespace SchoolManagementApi.Services.Admin
           .Include(s => s.StudentClasses)
           .ThenInclude(c => c.ClassArms)
           .Include(s => s.Subjects)
-          .FirstOrDefaultAsync(s => s.SchoolId.ToString() == schoolId);
+          .Where(s => s.SchoolId.ToString() == schoolId)
+          .FirstOrDefaultAsync();
         return school;
       }
       catch (Exception ex)

@@ -12,14 +12,18 @@ namespace SchoolManagementApi.Services.Admin
     private readonly ApplicationDbContext _context = context;
     private readonly ILoggerManager _logger = logger;
 
-    public async Task<Subject> AddSubject(Subject subject)
+    public async Task<Subject> AddSubject(string subjectName)
     {
       try
       {
         // check if subject already exists
-        var checkSubject = await _context.Subjects.FirstOrDefaultAsync(s => s.SubjectName == subject.SubjectName);
-        if (checkSubject == null)
+        var checkSubject = await _context.Subjects.AnyAsync(s => s.SubjectName == subjectName.ToLower());
+        if (!checkSubject)
         {
+          var subject = new Subject
+          {
+            SubjectName = subjectName.ToLower()
+          };
           var response = _context.Subjects.Add(subject);
           await _context.SaveChangesAsync();
           return response.Entity;

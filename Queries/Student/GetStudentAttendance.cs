@@ -20,14 +20,26 @@ namespace SchoolManagementApi.Queries.Students
     public class AttendanceStatus
     {
       public List<StudentDto> PresentStudents { get; set; } = [];
+      public int PresentStudentsCount { get; set; }
       public List<StudentDto> AbsentStudents { get; set; } = [];
+      public int AbsentStudentsCount { get; set; }
       public List<StudentDto> HalfDayStudents { get; set; } = [];
+      public int HalfDayStudentsCount { get; set; }
+      public int TotalStudentsCount => PresentStudentsCount + AbsentStudentsCount + HalfDayStudentsCount;
+      public string StudentName { get; set; } = string.Empty;
+      public string StudentUniqueId { get; set; } = string.Empty;
+      public int TimesPresent { get; set; }
+      public int TimesAbsent { get; set; }
+      public int TimesHalfDay { get; set; }
+
     }
 
     public class GetStudentAttendanceQuery : IRequest<GenericResponse>
     {
-      public required string ClassArmId { get; set; }
+      public string ClassArmId { get; set; } = string.Empty;
       public DateTime Date { get; set; }
+      public DateTime EndDate { get; set; }
+      public string Status { get; set; } = "daily";
     }
 
     public class GetStudentAttendanceHandler(IStudentClassServices studentClassServices, ILoggerManager logger) : IRequestHandler<GetStudentAttendanceQuery, GenericResponse>
@@ -38,7 +50,7 @@ namespace SchoolManagementApi.Queries.Students
       {
         try
         {
-          var attendance = await _studentClassServices.GetStudentsAttendance(request.ClassArmId, request.Date);
+          var attendance = await _studentClassServices.GetStudentsAttendance(request.ClassArmId, request.Date, request.EndDate, request.Status);
           if (attendance != null)
           {
             return new GenericResponse

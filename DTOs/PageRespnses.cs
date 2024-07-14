@@ -6,7 +6,7 @@ namespace SchoolManagementApi.DTOs
   {
     public class TeachersPageResponse
     {
-      public IList<TeachingStaff> Teachers { get; set; }
+      public IList<TeachingStaff> Teachers { get; set; } = [];
       public int TotalPages { get; set; }
       public int CurrentPage { get; set; }
       public int PagesLeft { get; set; }
@@ -14,7 +14,7 @@ namespace SchoolManagementApi.DTOs
 
     public class NonTeachersPageResponse
     {
-      public IList<NonTeachingStaff> NonTeachers { get; set; }
+      public IList<NonTeachingStaff> NonTeachers { get; set; } = [];
       public int TotalPages { get; set; }
       public int CurrentPage { get; set; }
       public int PagesLeft { get; set; }
@@ -22,7 +22,7 @@ namespace SchoolManagementApi.DTOs
 
     public class ParentsPageResponse
     {
-      public IList<Parent> Parents { get; set; }
+      public IList<Parent> Parents { get; set; } = [];
       public int TotalPages { get; set; }
       public int CurrentPage { get; set; }
       public int PagesLeft { get; set; }
@@ -30,7 +30,7 @@ namespace SchoolManagementApi.DTOs
 
     public class StudentsPageResponse
     {
-      public IList<Student> Students { get; set; }
+      public IList<Student> Students { get; set; } = [];
       public int TotalPages { get; set; }
       public int CurrentPage { get; set; }
       public int PagesLeft { get; set; }

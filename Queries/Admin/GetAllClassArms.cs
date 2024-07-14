@@ -9,8 +9,8 @@ namespace SchoolManagementApi.Queries.Admin
   {
     public class GetAllClassArmsQuery : IRequest<GenericResponse>
     {
-      public string? SchoolId { get; set; }
-      public string? ClassId { get; set; }
+      public string SchoolId { get; set; } = string.Empty;
+      public string ClassId { get; set; } = string.Empty;
     }
 
     public class GGetAllClassArmsQueryHandlers(IStudentClassServices studentClassServices) : IRequestHandler<GetAllClassArmsQuery, GenericResponse>

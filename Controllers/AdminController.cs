@@ -33,21 +33,26 @@ namespace SchoolManagementApi.Controllers
     [Authorize(Policy = "OrganizationAdmin")]
     public async Task<IActionResult> CreateOrganization(CreateOrganization.CreateOrganizationsCommand request)
     {
+      Console.WriteLine($"organization name = {request.OrganizationName}");
+      Console.WriteLine($"Admin Id = {request.AdminId}");
       try
       {
-        if (string.IsNullOrEmpty(request.OrganizationName))
-        {
-            return BadRequest("Organization Name cannot be empty");
-        }
+        if (string.IsNullOrEmpty(request.OrganizationName) || string.IsNullOrEmpty(request.AdminId))
+          return BadRequest("Organization Name cannot be empty");
 
         if (string.IsNullOrEmpty(CurrentUserId))
-        {
-            return Unauthorized("You are not an admin");
-        }
-        request.AdminId = CurrentUserId!;
+          return Unauthorized("You are not authenticated");
+          
+        request.AdminId = CurrentUserId;
         var response = await _mediator.Send(request);
-        return response.Status == HttpStatusCode.OK.ToString()
-          ? Ok(response) : BadRequest(response);
+        
+        return response.Status switch
+        {
+            "OK" => Ok(response),
+            "BadRequest" => BadRequest(response),
+            "NotFound" => NotFound(response),
+            _ => StatusCode(500, "An unexpected error occurred")
+        };
       }
       catch (Exception ex)
       {
@@ -61,13 +66,22 @@ namespace SchoolManagementApi.Controllers
 
     public async Task<IActionResult> CreateOrganizationForAdmin(string adminId)
     {
-      var request = new CreateOrganization.CreateOrganizationsCommand
+      if (string.IsNullOrEmpty(adminId))
+          return BadRequest("please provide admin id");
+      try
       {
-          AdminId = adminId
-      };
-      var response = await _mediator.Send(request);
-      return response.Status == HttpStatusCode.OK.ToString()
-        ? Ok(response) : BadRequest(response);
+        var request = new CreateOrganization.CreateOrganizationsCommand
+        {
+            AdminId = adminId
+        };
+        var response = await _mediator.Send(request);
+        return response.Status == HttpStatusCode.OK.ToString()
+          ? Ok(response) : BadRequest(response);
+      }
+      catch (Exception ex)
+      {
+        return StatusCode(500, $"An error occurred while processing your request - {ex.Message}");
+      }
     }
 
 
@@ -99,7 +113,7 @@ namespace SchoolManagementApi.Controllers
 
         var response = await _mediator.Send(new GetOrganizationsByAdminId.GetOrganizationByAdminIdQuery(adminId));
         return response.Status == HttpStatusCode.OK.ToString()
-          ? Ok(response) : BadRequest(response);
+          ? Ok(response) : NotFound(response);
       }
       catch (Exception ex)
       {
@@ -114,7 +128,7 @@ namespace SchoolManagementApi.Controllers
     {
       var response = await _mediator.Send(new GetAllOrganizations.GetAllOrganizationsQuery());
       return response.Status == HttpStatusCode.OK.ToString()
-        ? Ok(response) : BadRequest(response);
+        ? Ok(response) : NotFound(response);
     }
 
     [HttpPost]
@@ -157,7 +171,7 @@ namespace SchoolManagementApi.Controllers
         }
         var response = await _mediator.Send(new GetOrganizationZones.GetOrganizationZonesQuery(organizationId));
         return response.Status == HttpStatusCode.OK.ToString()
-          ? Ok(response) : BadRequest(response);
+          ? Ok(response) : NotFound(response);
       }
       catch (Exception ex)
       {
@@ -294,7 +308,7 @@ namespace SchoolManagementApi.Controllers
         var response = await _mediator.Send(request);
         return response.Status == HttpStatusCode.OK.ToString()
           ? Ok(response)
-          : BadRequest(response);
+          : NotFound(response);
       }
       catch (Exception ex)
       {
@@ -324,7 +338,7 @@ namespace SchoolManagementApi.Controllers
 				var response = await _mediator.Send(request);
         return response.Status == HttpStatusCode.OK.ToString()
           ? Ok(response)
-          : BadRequest(response);
+          : NotFound(response);
 			}
 			catch (Exception ex)
       {
@@ -350,7 +364,7 @@ namespace SchoolManagementApi.Controllers
       {
         var response = await _mediator.Send(request);
         return response.Status == HttpStatusCode.OK.ToString()
-          ? Ok(response) : BadRequest(response);
+          ? Ok(response) : NotFound(response);
       }
       catch (Exception ex)
       {
@@ -503,7 +517,8 @@ namespace SchoolManagementApi.Controllers
           return BadRequest("You are not authorized");
         var response = await _mediator.Send(request);
         return response.Status == HttpStatusCode.OK.ToString()
-          ? Ok(response) : BadRequest(response);
+          ? Ok(response) : BadRequest(response.Message);
+        //return Ok(response);
       }
       catch (Exception ex)
       {

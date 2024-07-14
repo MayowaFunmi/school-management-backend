@@ -4,15 +4,17 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SchoolManagementApi.Commands.Profiles;
 using SchoolManagementApi.Commands.Students;
+using SchoolManagementApi.Intefaces.Admin;
 using SchoolManagementApi.Queries.Profiles;
 using SchoolManagementApi.Queries.School;
 using SchoolManagementApi.Queries.Students;
 
 namespace SchoolManagementApi.Controllers
 {
-  public class StudentController(IMediator mediator) : BaseController
+  public class StudentController(IMediator mediator, IStudentClassServices studentClassServices) : BaseController
   {
     private readonly IMediator _mediator = mediator;
+    private readonly IStudentClassServices _studentClassServices = studentClassServices;
     
     [HttpPost]
     [Route("create-student-profile")]
@@ -194,6 +196,98 @@ namespace SchoolManagementApi.Controllers
       catch (Exception ex)
       {
         return StatusCode(500, $"An error occurred while processing your request - {ex.Message}");
+      }
+    }
+
+    [HttpGet]
+    [Route("get-classarm-daily-attendance")]
+    [Authorize]
+
+    public async Task<IActionResult> GetClassDailyAttendanceCount([FromQuery] string classArmId, [FromQuery] DateTime date)
+    {
+      if(string.IsNullOrEmpty(classArmId) || date == default)
+        return BadRequest("class arm and date cannot be diled");
+      try
+      {
+        var count = await _studentClassServices.GetClassDailyAttendanceCount(classArmId, date);
+        return Ok(new { ClassArmId = classArmId, Date = date, Count = count });
+      }
+      catch (Exception ex)
+      {
+        return StatusCode(500, $"An error occurred whil getting daily attendance record - {ex.Message}");
+      }
+    }
+
+    [HttpGet]
+    [Route("get-classArmId-weekly-attendance")]
+    [Authorize]
+
+    public async Task<IActionResult> GetClassWeeklyAttendanceCount([FromQuery] string classArmId, [FromQuery] DateTime startDate)
+    {
+      if(string.IsNullOrEmpty(classArmId) || startDate == default)
+        return BadRequest("class arm and date cannot be diled");
+      try
+      {
+        var count = await _studentClassServices.GetClassWeeklyAttendanceCount(classArmId, startDate);
+        return Ok(new { ClassArmId = classArmId, StartDate = startDate, Count = count });
+      }
+      catch (Exception ex)
+      {
+        return StatusCode(500, $"An error occurred whil getting weekly attendance record - {ex.Message}");
+      }
+    }
+
+    [HttpGet]
+    [Route("get-student-daily-attendance")]
+    [Authorize]
+    public async Task<IActionResult> GetStudentDailyAttendanceCount([FromQuery] string classArmId, [FromQuery] string studentId, [FromQuery] DateTime date)
+    {
+      if(string.IsNullOrEmpty(classArmId) || string.IsNullOrEmpty(studentId) || date == default)
+        return BadRequest("class arm, student id and date cannot be diled");
+      try
+      {
+        var count = await _studentClassServices.GetStudentDailyAttendanceCount(classArmId, studentId, date);
+        return Ok(new { ClassArmId = classArmId, StudentId = studentId, Date = date, Count = count });
+      }
+      catch (Exception ex)
+      {
+        return StatusCode(500, $"An error occurred whil getting student daily attendance count - {ex.Message}");
+      }
+    }
+
+    [HttpGet]
+    [Route("get-student-weekly-attendance")]
+    [Authorize]
+    public async Task<IActionResult> GetStudentWeeklyAttendanceCount([FromQuery] string classArmId, [FromQuery] string studentId, [FromQuery] DateTime startDate)
+    {
+      if(string.IsNullOrEmpty(classArmId) || string.IsNullOrEmpty(studentId) || startDate == default)
+        return BadRequest("class arm, student id and date cannot be diled");
+      try
+      {
+        var count = await _studentClassServices.GetStudentWeeklyAttendanceCount(classArmId, studentId, startDate);
+        return Ok(new { ClassArmId = classArmId, StudentId = studentId, Date = startDate, Count = count });
+      }
+      catch (Exception ex)
+      {
+        return StatusCode(500, $"An error occurred whil getting student weekly attendance count - {ex.Message}");
+      }
+    }
+
+    [HttpGet]
+    [Route("get-class-weekly-attendance-counts")]
+    [Authorize]
+    public async Task<IActionResult> StudentsClassWeeklyAttendanceCounts([FromQuery] string classArmId, [FromQuery] string studentId, [FromQuery] DateTime startDate)
+    {
+      if(string.IsNullOrEmpty(classArmId) || string.IsNullOrEmpty(studentId) || startDate == default)
+        return BadRequest("class arm, student id and date cannot be diled");
+      try
+      {
+        var response = await _studentClassServices.StudentsClassWeeklyAttendanceCounts(classArmId, startDate);
+        return Ok(new { ClassArmId = classArmId, StudentId = studentId, Date = startDate, Response = response });
+      }
+      catch (Exception ex)
+      {
+        return StatusCode(500, $"An error occurred whil getting student weekly attendance count - {ex.Message}");
       }
     }
   }

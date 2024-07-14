@@ -14,9 +14,9 @@ namespace SchoolManagementApi.Models
     [Required]
     public Guid OrganizationId { get; set; }
     public string Name { get; set; } = string.Empty;
-    public List<School>? Schools { get; set; }
-    public string? State { get; set; }
-    public List<string>? LocalGovtAreas { get; set; }
+    public List<School>? Schools { get; set; } = [];
+    public string State { get; set; } = string.Empty;
+    public List<string> LocalGovtAreas { get; set; } = [];
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime UpdatedAt { get; set; }
   }

@@ -7,48 +7,43 @@ namespace SchoolManagementApi.Queries.Admin
 {
   public class GetAllSchools
   {
-    public class GetAllSchoolsQuery : IRequest<GenericResponse>
+    public class GetAllSchoolsQuery : IRequest<PageDataResponse>
     {
       public int Page { get; set; }
       public int PageSize { get; set; }
     };
     
-    public class GetAllSchoolsHandler(ISchoolServices schoolServices) : IRequestHandler<GetAllSchoolsQuery, GenericResponse>
+    public class GetAllSchoolsHandler(ISchoolServices schoolServices) : IRequestHandler<GetAllSchoolsQuery, PageDataResponse>
     {
       private readonly ISchoolServices _schoolServices = schoolServices;
 
-      public async Task<GenericResponse> Handle(GetAllSchoolsQuery request, CancellationToken cancellationToken)
+      public async Task<PageDataResponse> Handle(GetAllSchoolsQuery request, CancellationToken cancellationToken)
       {
-        int totalSchoolCount = await _schoolServices.AllSchoolCount();
-        int totalPages = (int)Math.Ceiling((double)totalSchoolCount / request.PageSize);
         try
         {
+          int totalSchoolCount = await _schoolServices.AllSchoolCount();
           var schools = await _schoolServices.AllScchools(request.Page, request.PageSize);
+          var paginationMetaData = new PaginationMetaData(request.Page, request.PageSize, totalSchoolCount);
+
           if (schools.Count != 0)
           {
-            var response = new PaginationResponse
-            {
-              Schools = schools,
-              TotalPages = totalPages,
-              CurrentPage = request.Page,
-              PagesLeft = totalPages - request.Page,
-            };
-            return new GenericResponse
+            return new PageDataResponse
             {
               Status = HttpStatusCode.OK.ToString(),
-              Message = $"{schools.Count} registered schools retrieved succesfully",
-              Data = response
+              Message = "All schools retrieved successfully",
+              Data = schools,
+              Pagination = paginationMetaData
             };
           }
-          return new GenericResponse
+          return new PageDataResponse
           {
-            Status = HttpStatusCode.OK.ToString(),
-            Message = $"No school has been registered",
+            Status = HttpStatusCode.NotFound.ToString(),
+            Message = "No school found"
           };
         }
         catch (Exception ex)
         {
-          return new GenericResponse
+          return new PageDataResponse
           {
             Status = HttpStatusCode.InternalServerError.ToString(),
             Message = $"An internal server error occurred - {ex.Message}"

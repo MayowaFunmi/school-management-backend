@@ -10,8 +10,8 @@ namespace SchoolManagementApi.Models
     [Key]
     public Guid SchoolId { get; set; }
     [ForeignKey("AdminId")]
-    public string? AdminId { get; set; }
-    public ApplicationUser? Admin { get; set; }
+    public string AdminId { get; set; } = string.Empty;
+    public ApplicationUser Admin { get; set; } = null!;
     public string OrganizationUniqueId { get; set; } = string.Empty;
     public string SchoolUniqueId { get; set; } = string.Empty;
     [ForeignKey("ZoneId")]
@@ -23,9 +23,9 @@ namespace SchoolManagementApi.Models
     public string Address { get; set; } = string.Empty;
     public string State { get; set; } = string.Empty;
     public string LocalGovtArea { get; set; } = string.Empty;
-    public List<Department>? Departments { get; set; }
-    public List<StudentClass>? StudentClasses { get; set; }
-    public List<Subject>? Subjects { get; set; }
+    public List<Department> Departments { get; set; } = [];
+    public List<StudentClass> StudentClasses { get; set; } = [];
+    public List<Subject> Subjects { get; set; } = [];
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime UpdatedAt { get; set; }
   }

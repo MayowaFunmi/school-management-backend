@@ -21,6 +21,7 @@ namespace SchoolManagementApi.Services.Admin
         var organizations = await _context.Organizations
           .Include(o => o.Admin)
           .Include(o => o.Zones)
+          .AsNoTracking()
           .ToListAsync();
 
         return organizations;
@@ -33,10 +34,16 @@ namespace SchoolManagementApi.Services.Admin
       }
     }
 
-    public async Task<Organization> CreateOrganization(Organization organization)
+    public async Task<Organization?> CreateOrganization(Organization organization)
     {
       try
       {
+        // check if organization already exist
+        var orgExists = await _context.Organizations.AsNoTracking().AnyAsync(o => o.Name.ToLower() == organization.Name);
+        if (orgExists)
+        {
+          return null;
+        }
         var response = _context.Organizations.Add(organization);
         await _context.SaveChangesAsync();
         return response.Entity;
@@ -63,6 +70,7 @@ namespace SchoolManagementApi.Services.Admin
           .Include(o => o.Zones)
           .ThenInclude(z => z.Schools)
           .Where(x => x.AdminId == adminId)
+          .AsNoTracking()
           .ToListAsync();
         return adminOrgs;
       }
