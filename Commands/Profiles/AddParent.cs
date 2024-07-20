@@ -12,21 +12,20 @@ namespace SchoolManagementApi.Commands.Profiles
   {
     public class AddParentCommand : IRequest<GenericResponse>
     {
-      public required string UserId { get; set; }
-      public required string OrganizationUniqueId { get; set; }
-      public required string StudentSchoolId { get; set; }
-      public required string Title { get; set; }
-      public required string Gender { get; set; }
-      public required string RelationshipType { get; set; }
-      public required string Address { get; set; }
-      public required DateTime DateOfBirth { get; set; }
-      public required int Age { get; set; }
-      public required string Religion { get; set; }
-      public required string MaritalStatus { get; set; }
-      public required string StateOfOrigin { get; set; }
-      public required string LgaOfOrigin { get; set; }
-      public required string LgaOfResidence { get; set; }
-      public required string Occupation { get; set; }
+      public string UserId { get; set; } = string.Empty;
+      public string StudentSchoolId { get; set; } = string.Empty;
+      public string Title { get; set; } = string.Empty;
+      public string Gender { get; set; } = string.Empty;
+      public string RelationshipType { get; set; } = string.Empty;
+      public string Address { get; set; } = string.Empty;
+      public DateTime DateOfBirth { get; set; }
+      public int Age { get; set; }
+      public string Religion { get; set; } = string.Empty;
+      public string MaritalStatus { get; set; } = string.Empty;
+      public string StateOfOrigin { get; set; } = string.Empty;
+      public string LgaOfOrigin { get; set; } = string.Empty;
+      public string LgaOfResidence { get; set; } = string.Empty;
+      public string Occupation { get; set; } = string.Empty;
     }
 
     public class AddparentHandler(IParentService parentService, ApplicationDbContext context) : IRequestHandler<AddParentCommand, GenericResponse>
@@ -38,16 +37,6 @@ namespace SchoolManagementApi.Commands.Profiles
       {
         try
         {
-          var organizationId = await _parentService.OrganizationExists(request.OrganizationUniqueId);
-          if (string.IsNullOrEmpty(organizationId))
-          {
-            return new GenericResponse
-            {
-              Status = HttpStatusCode.OK.ToString(),
-              Message = $"Organization not found"
-            };
-          }
-
           var parent = await _parentService.ParentProfileExists(request.UserId);
           if (parent)
           {
@@ -65,7 +54,6 @@ namespace SchoolManagementApi.Commands.Profiles
             if (user != null)
             {
               user.PercentageCompleted += 30;
-              user.OrganizationId = organizationId;
               await _context.SaveChangesAsync(cancellationToken);
             }
             
@@ -97,7 +85,6 @@ namespace SchoolManagementApi.Commands.Profiles
         return new Parent 
         {
           UserId = request.UserId,
-          OrganizationUniqueId = request.OrganizationUniqueId,
           StudentSchoolId = Guid.Parse(request.StudentSchoolId),
           Title = TitleMap.TitleDictionary.TryGetValue(request.Title!, out string? value) ? value : "Mr",
           Gender = TitleMap.GenderDictionary.TryGetValue(request.Gender!, out string? GenderValue) ? GenderValue : "Male",

@@ -138,7 +138,12 @@ namespace SchoolManagementApi.Controllers
     {
       try
       {
-        if (string.IsNullOrEmpty(request.OrganizationUniqueId) && string.IsNullOrEmpty(request.Name) && string.IsNullOrEmpty(request.AdminId) && string.IsNullOrEmpty(request.State))
+        if (string.IsNullOrEmpty(request.OrganizationUniqueId) ||
+           string.IsNullOrEmpty(request.Name) || 
+           string.IsNullOrEmpty(request.AdminId) ||
+            string.IsNullOrEmpty(request.State) ||
+            request.LocalGovtAreas.Count == 0
+          )
         {
           return BadRequest("Some fields cannot be empty");
         }
@@ -147,7 +152,10 @@ namespace SchoolManagementApi.Controllers
         {
           return Unauthorized("You are not an admin");
         }
-        request.AdminId = CurrentUserId!;
+
+        if (request.AdminId != CurrentUserId)
+          return Unauthorized("You are not an admin for this organization");
+        
         var response = await _mediator.Send(request);
         return response.Status == HttpStatusCode.OK.ToString()
           ? Ok(response) : BadRequest(response);
@@ -247,7 +255,7 @@ namespace SchoolManagementApi.Controllers
       {
         if (string.IsNullOrEmpty(CurrentUserId))
           return Unauthorized("You are not an admin");
-        if (string.IsNullOrEmpty(request.OrganizationUniqueId) || string.IsNullOrEmpty(request.ZoneId) || string.IsNullOrEmpty(request.Name) || string.IsNullOrEmpty(request.Address) || string.IsNullOrEmpty(request.State) || string.IsNullOrEmpty(request.LocalGovtArea))
+        if (string.IsNullOrEmpty(request.OrganizationUniqueId) || string.IsNullOrEmpty(request.ZoneId) || string.IsNullOrEmpty(request.Name) || string.IsNullOrEmpty(request.Address))
           return BadRequest("All fields are required");
         request.AdminId = CurrentUserId;
         var response = await _mediator.Send(request);

@@ -73,7 +73,7 @@ namespace SchoolManagementApi.Commands.Admin
           var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == request.AdminId, cancellationToken: cancellationToken);
           if (user != null) 
           {
-            user.OrganizationId = createdOrganization.OrganizationId.ToString();
+            user.OrganizationId = createdOrganization.OrganizationUniqueId;
             _context.Users.Update(user);
             await _context.SaveChangesAsync(cancellationToken);
             return new GenericResponse

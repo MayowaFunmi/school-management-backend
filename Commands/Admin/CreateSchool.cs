@@ -11,13 +11,11 @@ namespace SchoolManagementApi.Commands.Admin
   {
     public class CreateSchoolCommand : IRequest<GenericResponse>
     {
-      public string? AdminId { get; set; }
-      public string? OrganizationUniqueId { get; set; }
-      public string? ZoneId { get; set; }
-      public string? Name { get; set; }
-      public string? Address { get; set; }
-      public string? State { get; set; }
-      public string? LocalGovtArea { get; set; }
+      public string AdminId { get; set; } = string.Empty;
+      public string OrganizationUniqueId { get; set; } = string.Empty;
+      public string ZoneId { get; set; } = string.Empty;
+      public string Name { get; set; } = string.Empty;
+      public string Address { get; set; } = string.Empty;
     }
 
     public class CreateSchoolHandler(ISchoolServices schoolServices) : IRequestHandler<CreateSchoolCommand, GenericResponse>
@@ -37,22 +35,20 @@ namespace SchoolManagementApi.Commands.Admin
         }
         var school = new School
         {
+          AdminId = request.AdminId,
           OrganizationUniqueId = request.OrganizationUniqueId!,
           SchoolUniqueId = GenerateUserCode.GenerateSchoolUniqueId(),
           ZoneId = Guid.Parse(request.ZoneId!),
           Name = request.Name!,
           Address = request.Address!,
-          State = request.State,
-          LocalGovtArea = request.LocalGovtArea!
         };
         var schoolCreated = await _schoolServices.AddSchool(school);
-        if (schoolCreated != null)
+        if (schoolCreated)
         {
           return new GenericResponse
           {
             Status = HttpStatusCode.OK.ToString(),
             Message = "School added sucessfully",
-            Data = schoolCreated
           };
         }
         return new GenericResponse

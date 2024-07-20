@@ -6,7 +6,7 @@ namespace SchoolManagementApi.Intefaces.Admin
 {
   public interface ISchoolServices
   {
-    Task<School> AddSchool(School school);
+    Task<bool> AddSchool(School school);
     Task<bool> OrganizationExists(string organizationUniqueId, string adminId);
     Task<School> GetSchoolById(string schoolId);
     Task<List<School>> AllScchools(int page, int pageSize);

@@ -40,6 +40,7 @@ namespace SchoolManagementApi.Services.Profiles
           .Include(t => t.CurrentPostingZone)
           .Include(t => t.CurrentPostingSchool)
           //.Include(t => t.Documents)
+          .AsNoTracking()
           .FirstOrDefaultAsync();
 
         return staff!;

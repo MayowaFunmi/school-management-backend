@@ -43,6 +43,7 @@ namespace SchoolManagementApi.Services.Profiles
           //.Include(t => t.Documents)
           .Include(t => t.CurrentSubject)
           //.Include(t => t.OtherSubjects)
+          .AsNoTracking()
           .FirstOrDefaultAsync();
 
         return teacher!;

@@ -625,6 +625,10 @@ namespace SchoolManagementApi.Migrations
                     b.Property<int>("LoginCount")
                         .HasColumnType("integer");
 
+                    b.Property<string>("MiddleName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("NormalizedEmail")
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
@@ -730,14 +734,6 @@ namespace SchoolManagementApi.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("MaritalStatus")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("MiddleName")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("OrganizationUniqueId")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -1016,14 +1012,6 @@ namespace SchoolManagementApi.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("MaritalStatus")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("MiddleName")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("OrganizationUniqueId")
                         .IsRequired()
                         .HasColumnType("text");
 

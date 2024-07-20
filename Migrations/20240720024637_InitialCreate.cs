@@ -35,6 +35,7 @@ namespace SchoolManagementApi.Migrations
                     OrganizationId = table.Column<string>(type: "text", nullable: false),
                     UniqueId = table.Column<string>(type: "text", nullable: false),
                     FirstName = table.Column<string>(type: "text", nullable: false),
+                    MiddleName = table.Column<string>(type: "text", nullable: false),
                     LastName = table.Column<string>(type: "text", nullable: false),
                     PercentageCompleted = table.Column<int>(type: "integer", nullable: false),
                     IsActive = table.Column<bool>(type: "boolean", nullable: false),
@@ -211,7 +212,7 @@ namespace SchoolManagementApi.Migrations
                 {
                     SchoolTermId = table.Column<Guid>(type: "uuid", nullable: false),
                     SchoolId = table.Column<string>(type: "text", nullable: false),
-                    SchoolSessionId = table.Column<string>(type: "text", nullable: true),
+                    SchoolSessionId = table.Column<string>(type: "text", nullable: false),
                     Name = table.Column<string>(type: "text", nullable: false),
                     TermStarts = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     TermEnds = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
@@ -235,7 +236,7 @@ namespace SchoolManagementApi.Migrations
                     ClassId = table.Column<string>(type: "text", nullable: false),
                     SubjectId = table.Column<string>(type: "text", nullable: false),
                     SchoolSessionId = table.Column<string>(type: "text", nullable: false),
-                    SchoolSessionId1 = table.Column<Guid>(type: "uuid", nullable: false),
+                    SchoolSessionId1 = table.Column<Guid>(type: "uuid", nullable: true),
                     Term = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
@@ -245,8 +246,7 @@ namespace SchoolManagementApi.Migrations
                         name: "FK_StudentsCARecords_SchoolSessions_SchoolSessionId1",
                         column: x => x.SchoolSessionId1,
                         principalTable: "SchoolSessions",
-                        principalColumn: "SchoolSessionId",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "SchoolSessionId");
                 });
 
             migrationBuilder.CreateTable(
@@ -257,8 +257,8 @@ namespace SchoolManagementApi.Migrations
                     AdminId = table.Column<string>(type: "text", nullable: false),
                     OrganizationId = table.Column<Guid>(type: "uuid", nullable: false),
                     Name = table.Column<string>(type: "text", nullable: false),
-                    State = table.Column<string>(type: "text", nullable: true),
-                    LocalGovtAreas = table.Column<List<string>>(type: "text[]", nullable: true),
+                    State = table.Column<string>(type: "text", nullable: false),
+                    LocalGovtAreas = table.Column<List<string>>(type: "text[]", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
@@ -278,7 +278,7 @@ namespace SchoolManagementApi.Migrations
                 columns: table => new
                 {
                     SchoolId = table.Column<Guid>(type: "uuid", nullable: false),
-                    AdminId = table.Column<string>(type: "text", nullable: true),
+                    AdminId = table.Column<string>(type: "text", nullable: false),
                     OrganizationUniqueId = table.Column<string>(type: "text", nullable: false),
                     SchoolUniqueId = table.Column<string>(type: "text", nullable: false),
                     ZoneId = table.Column<Guid>(type: "uuid", nullable: false),
@@ -296,7 +296,8 @@ namespace SchoolManagementApi.Migrations
                         name: "FK_Schools_AspNetUsers_AdminId",
                         column: x => x.AdminId,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Schools_Zones_ZoneId",
                         column: x => x.ZoneId,
@@ -331,9 +332,7 @@ namespace SchoolManagementApi.Migrations
                 {
                     StaffProfileId = table.Column<Guid>(type: "uuid", nullable: false),
                     UserId = table.Column<string>(type: "text", nullable: false),
-                    OrganizationUniqueId = table.Column<string>(type: "text", nullable: false),
                     Title = table.Column<string>(type: "text", nullable: false),
-                    MiddleName = table.Column<string>(type: "text", nullable: false),
                     ProfilePicture = table.Column<string>(type: "text", nullable: false),
                     Gender = table.Column<string>(type: "text", nullable: false),
                     DateOfBirth = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
@@ -498,9 +497,7 @@ namespace SchoolManagementApi.Migrations
                     CurrentSubjectId = table.Column<Guid>(type: "uuid", nullable: false),
                     OtherSubjects = table.Column<List<string>>(type: "text[]", nullable: false),
                     UserId = table.Column<string>(type: "text", nullable: false),
-                    OrganizationUniqueId = table.Column<string>(type: "text", nullable: false),
                     Title = table.Column<string>(type: "text", nullable: false),
-                    MiddleName = table.Column<string>(type: "text", nullable: false),
                     ProfilePicture = table.Column<string>(type: "text", nullable: false),
                     Gender = table.Column<string>(type: "text", nullable: false),
                     DateOfBirth = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
@@ -624,7 +621,7 @@ namespace SchoolManagementApi.Migrations
                     MorningAttendance = table.Column<string>(type: "text", nullable: false),
                     AfternoonAttendance = table.Column<string>(type: "text", nullable: false),
                     IsMarked = table.Column<bool>(type: "boolean", nullable: false),
-                    StudentId1 = table.Column<Guid>(type: "uuid", nullable: true),
+                    StudentId1 = table.Column<Guid>(type: "uuid", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
@@ -634,7 +631,8 @@ namespace SchoolManagementApi.Migrations
                         name: "FK_ClassAttendances_Students_StudentId1",
                         column: x => x.StudentId1,
                         principalTable: "Students",
-                        principalColumn: "StudentId");
+                        principalColumn: "StudentId",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -687,8 +685,8 @@ namespace SchoolManagementApi.Migrations
                     CATest2 = table.Column<int>(type: "integer", nullable: false),
                     CATest3 = table.Column<int>(type: "integer", nullable: false),
                     Exam = table.Column<int>(type: "integer", nullable: false),
-                    StudentId1 = table.Column<Guid>(type: "uuid", nullable: false),
-                    StudentsCARecordTestId = table.Column<Guid>(type: "uuid", nullable: false)
+                    StudentId1 = table.Column<Guid>(type: "uuid", nullable: true),
+                    StudentsCARecordTestId = table.Column<Guid>(type: "uuid", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -702,8 +700,7 @@ namespace SchoolManagementApi.Migrations
                         name: "FK_StudentsScores_Students_StudentId1",
                         column: x => x.StudentId1,
                         principalTable: "Students",
-                        principalColumn: "StudentId",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "StudentId");
                 });
 
             migrationBuilder.CreateIndex(

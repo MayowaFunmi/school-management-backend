@@ -14,13 +14,12 @@ namespace SchoolManagementApi.Services.Admin
     private readonly ApplicationDbContext _context = context;
     private readonly ILoggerManager _logger = logger;
 
-    public async Task<School> AddSchool(School school)
+    public async Task<bool> AddSchool(School school)
     {
       try
       {
-        var response = _context.Schools.Add(school);
-        await _context.SaveChangesAsync();
-        return response.Entity;
+        _context.Schools.Add(school);
+        return await _context.SaveChangesAsync() > 0;
       }
       catch (Exception ex)
       {

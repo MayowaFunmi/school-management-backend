@@ -43,8 +43,9 @@ namespace SchoolManagementApi.Services.Profiles
         var parent = await _context.Parents
           .Include(p => p.User)
           .Include(p => p.StudentSchool)
+          .AsNoTracking()
           .FirstOrDefaultAsync(p => p.ParentId.ToString() == parentId);
-        return parent;
+        return parent!;
       }
       catch (Exception ex)
       {

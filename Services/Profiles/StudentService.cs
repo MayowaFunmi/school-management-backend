@@ -47,7 +47,7 @@ namespace SchoolManagementApi.Services.Profiles
           .Include(p => p.Department)
           .Include(p => p.StudentClass)
           .FirstOrDefaultAsync(p => p.StudentId.ToString() == studentId);
-        return student;
+        return student!;
       }
       catch (Exception ex)
       {

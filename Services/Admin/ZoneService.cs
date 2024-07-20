@@ -18,35 +18,30 @@ namespace SchoolManagementApi.Services.Admin
 
     public async Task<List<Zone>> AllOrganizationZones(string organizationId)
     {
-      try
-      {
-        if (!_cache.TryGetValue(CacheConstants.ZONES, out List<Zone>? zones))
+        try
         {
-          zones = await _context.Zones
-            .Include(x => x.Schools)
-            .Where(x => x.OrganizationId.ToString() == organizationId)
-            .AsNoTracking()
-            .ToListAsync();
-          _cache.Set(CacheConstants.ZONES, zones);
+          return await _context.Zones
+              .Include(x => x.Schools)
+              .Where(x => x.OrganizationId.ToString() == organizationId)
+              .AsNoTracking()
+              .ToListAsync();
         }
-        zones ??= [];
-        return zones;
-      }
-      catch (Exception ex)
-      {
-        _logger.LogError($"Error getting all organization zones- {ex.Message}");
-        WatchLogger.LogError(ex.ToString(), $"Error getting all organization zones - {ex.Message}");
-        throw;
-      }
+        catch (Exception ex)
+        {
+          _logger.LogError($"Error getting all organization zones- {ex.Message}");
+          WatchLogger.LogError(ex.ToString(), $"Error getting all organization zones - {ex.Message}");
+          throw;
+        }
     }
 
-    public async Task<Zone> CreateZone(Zone zone)
+
+    public async Task<bool> CreateZone(Zone zone)
     {
       try
       {
-        var result = _context.Zones.Add(zone);
-        await _context.SaveChangesAsync();
-        return result.Entity;
+        _context.Zones.Add(zone);
+        var result = await _context.SaveChangesAsync() > 0;
+        return result;
       }
       catch (Exception ex)
       {

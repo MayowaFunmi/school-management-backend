@@ -13,7 +13,7 @@ using SchoolManagementApi.Data;
 namespace SchoolManagementApi.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240609125112_InitialCreate")]
+    [Migration("20240720024637_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -223,7 +223,7 @@ namespace SchoolManagementApi.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid?>("StudentId1")
+                    b.Property<Guid>("StudentId1")
                         .HasColumnType("uuid");
 
                     b.HasKey("AttendanceId");
@@ -346,6 +346,7 @@ namespace SchoolManagementApi.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("AdminId")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<DateTime>("CreatedAt")
@@ -432,6 +433,7 @@ namespace SchoolManagementApi.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("SchoolSessionId")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<Guid?>("SchoolSessionId1")
@@ -496,7 +498,7 @@ namespace SchoolManagementApi.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid>("SchoolSessionId1")
+                    b.Property<Guid?>("SchoolSessionId1")
                         .HasColumnType("uuid");
 
                     b.Property<string>("SubjectId")
@@ -536,14 +538,14 @@ namespace SchoolManagementApi.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid>("StudentId1")
+                    b.Property<Guid?>("StudentId1")
                         .HasColumnType("uuid");
 
                     b.Property<string>("StudentsCARecordId")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid>("StudentsCARecordTestId")
+                    b.Property<Guid?>("StudentsCARecordTestId")
                         .HasColumnType("uuid");
 
                     b.HasKey("StudentScoresId");
@@ -625,6 +627,10 @@ namespace SchoolManagementApi.Migrations
 
                     b.Property<int>("LoginCount")
                         .HasColumnType("integer");
+
+                    b.Property<string>("MiddleName")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<string>("NormalizedEmail")
                         .HasMaxLength(256)
@@ -731,14 +737,6 @@ namespace SchoolManagementApi.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("MaritalStatus")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("MiddleName")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("OrganizationUniqueId")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -1020,14 +1018,6 @@ namespace SchoolManagementApi.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("MiddleName")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("OrganizationUniqueId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<List<string>>("OtherSubjects")
                         .IsRequired()
                         .HasColumnType("text[]");
@@ -1100,6 +1090,7 @@ namespace SchoolManagementApi.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<List<string>>("LocalGovtAreas")
+                        .IsRequired()
                         .HasColumnType("text[]");
 
                     b.Property<string>("Name")
@@ -1110,6 +1101,7 @@ namespace SchoolManagementApi.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<string>("State")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<DateTime>("UpdatedAt")
@@ -1192,7 +1184,9 @@ namespace SchoolManagementApi.Migrations
                 {
                     b.HasOne("SchoolManagementApi.Models.UserModels.Student", "Student")
                         .WithMany()
-                        .HasForeignKey("StudentId1");
+                        .HasForeignKey("StudentId1")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Student");
                 });
@@ -1244,7 +1238,9 @@ namespace SchoolManagementApi.Migrations
                 {
                     b.HasOne("SchoolManagementApi.Models.UserModels.ApplicationUser", "Admin")
                         .WithMany()
-                        .HasForeignKey("AdminId");
+                        .HasForeignKey("AdminId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("SchoolManagementApi.Models.Zone", "Zone")
                         .WithMany("Schools")
@@ -1280,9 +1276,7 @@ namespace SchoolManagementApi.Migrations
                 {
                     b.HasOne("SchoolManagementApi.Models.SchoolSession", "SchoolSession")
                         .WithMany()
-                        .HasForeignKey("SchoolSessionId1")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("SchoolSessionId1");
 
                     b.Navigation("SchoolSession");
                 });
@@ -1291,15 +1285,12 @@ namespace SchoolManagementApi.Migrations
                 {
                     b.HasOne("SchoolManagementApi.Models.UserModels.Student", "Student")
                         .WithMany()
-                        .HasForeignKey("StudentId1")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("StudentId1");
 
                     b.HasOne("SchoolManagementApi.Models.StudentsCARecord", "StudentsCARecord")
                         .WithMany("StudentsScores")
                         .HasForeignKey("StudentsCARecordTestId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.Navigation("Student");
 

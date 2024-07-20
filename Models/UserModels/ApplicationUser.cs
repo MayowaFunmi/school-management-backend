@@ -8,6 +8,7 @@ namespace SchoolManagementApi.Models.UserModels
     public string OrganizationId { get; set; } = string.Empty;
     public string UniqueId { get; set; } = string.Empty;
     public string FirstName { get; set; } = string.Empty;
+    public string MiddleName { get; set; } = string.Empty;
     public string LastName { get; set; } = string.Empty;
     public int PercentageCompleted { get; set; }
     public bool IsActive { get; set; } = true;

@@ -9,15 +9,17 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.IdentityModel.Tokens;
 using SchoolManagementApi.Configurations;
 using SchoolManagementApi.Constants;
+using SchoolManagementApi.Data;
 using SchoolManagementApi.DTOs;
 using SchoolManagementApi.Models.UserModels;
 using SchoolManagementApi.Utilities;
 
 namespace SchoolManagementApi.Controllers
 {
-  public class AuthController(UserManager<ApplicationUser> userManager, IConfiguration configuration, IMemoryCache cache) : BaseController
+  public class AuthController(UserManager<ApplicationUser> userManager, ApplicationDbContext context, IConfiguration configuration, IMemoryCache cache) : BaseController
   {
     private readonly UserManager<ApplicationUser> _userManager = userManager;
+    private readonly ApplicationDbContext _context = context;
     private readonly IConfiguration _configuration = configuration;
     private readonly IMemoryCache _cache = cache;
 
@@ -58,12 +60,24 @@ namespace SchoolManagementApi.Controllers
         };
       }
 
+      var confirmOrganization = await _context.Organizations.AsNoTracking().AnyAsync(o => o.OrganizationUniqueId == registerDto.OrganizationUniqueId);
+      if (!confirmOrganization)
+      {
+        return new GenericResponse
+        {
+          Status = HttpStatusCode.NotFound.ToString(),
+          Message = $"Organization with unique id {registerDto.OrganizationUniqueId} not found"
+        };
+      }
+
       var newUser = new ApplicationUser
       {
         UniqueId = GenerateUserCode.GenerateUserUniqueId(),
+        OrganizationId = registerDto.OrganizationUniqueId,
         Email = registerDto.Email,
         UserName = registerDto.UserName,
         FirstName = registerDto.FirstName,
+        MiddleName = registerDto.MiddleName,
         LastName = registerDto.LastName,
         PhoneNumber = registerDto.PhoneNumber,
         PercentageCompleted = 30,
@@ -86,6 +100,73 @@ namespace SchoolManagementApi.Controllers
       {
         Status = HttpStatusCode.OK.ToString(),
         Message = "User Created successfully",
+      };
+    }
+
+    [HttpPost]
+    [Route("organization-admin-signup")]
+    public async Task<GenericResponse> OrganizationAdminRegister([FromBody] AdminRegisterDto registerDto)
+    {
+      if (!string.IsNullOrEmpty(CurrentUserId))
+      {
+        return new GenericResponse
+        {
+          Status = HttpStatusCode.BadRequest.ToString(),
+          Message = "User is already logged in"
+        };
+      }
+      var isUsernameExists = await _userManager.Users
+                                  .AsNoTracking()
+                                  .AnyAsync(u => u.UserName == registerDto.UserName);
+      var isEmailExists = await _userManager.Users
+                                  .AsNoTracking()
+                                  .AnyAsync(u => u.Email == registerDto.Email);
+      if (isUsernameExists)
+      {
+        return new GenericResponse
+        {
+          Status = HttpStatusCode.Conflict.ToString(),
+          Message = $"{registerDto.UserName} is already registered. Try to login or click on forgot password"
+        };
+      }
+
+      if (isEmailExists)
+      {
+        return new GenericResponse
+        {
+          Status = HttpStatusCode.Conflict.ToString(),
+          Message = $"{registerDto.Email} is already registered. Try to login or click on forgot password"
+        };
+      }
+
+      var newUser = new ApplicationUser
+      {
+        UniqueId = GenerateUserCode.GenerateOrgUserUniqueId(),
+        Email = registerDto.Email,
+        UserName = registerDto.UserName,
+        FirstName = registerDto.FirstName,
+        LastName = registerDto.LastName,
+        PhoneNumber = registerDto.PhoneNumber,
+        PercentageCompleted = 30,
+        SecurityStamp = Guid.NewGuid().ToString(),
+        CreatedAt = DateTime.UtcNow,
+        UpdatedAt = DateTime.UtcNow  
+      };
+      var createdUser = await _userManager.CreateAsync(newUser, registerDto.Password);
+      if (!createdUser.Succeeded)
+      {
+        return new GenericResponse
+        {
+          Status = HttpStatusCode.BadRequest.ToString(),
+          Message = "User Creation Failed"
+        };
+      }
+      await _userManager.AddToRolesAsync(newUser, [StaticUserRoles.Users, StaticUserRoles.OrganizationAdmin]);
+      _cache.Remove(CacheConstants.USERS);
+      return new GenericResponse
+      {
+        Status = HttpStatusCode.OK.ToString(),
+        Message = "Organization Admin User Created successfully",
       };
     }
 
