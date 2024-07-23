@@ -3,8 +3,8 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using SchoolManagementApi.Data;
 using SchoolManagementApi.DTOs;
-using SchoolManagementApi.Intefaces.Profiles;
-using SchoolManagementApi.Intefaces.Uploads;
+using SchoolManagementApi.Interfaces.Profiles;
+using SchoolManagementApi.Interfaces.Uploads;
 
 namespace SchoolManagementApi.Commands.Uploads
 {

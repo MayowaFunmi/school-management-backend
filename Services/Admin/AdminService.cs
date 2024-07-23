@@ -4,9 +4,9 @@ using Microsoft.Extensions.Caching.Memory;
 using SchoolManagementApi.Constants;
 using SchoolManagementApi.Data;
 using SchoolManagementApi.DTOs;
-using SchoolManagementApi.Intefaces.Admin;
-using SchoolManagementApi.Intefaces.LoggerManager;
-using SchoolManagementApi.Intefaces.Profiles;
+using SchoolManagementApi.Interfaces.Admin;
+using SchoolManagementApi.Interfaces.LoggerManager;
+using SchoolManagementApi.Interfaces.Profiles;
 using SchoolManagementApi.Models;
 using SchoolManagementApi.Models.UserModels;
 using WatchDog;
@@ -69,11 +69,29 @@ namespace SchoolManagementApi.Services.Admin
             }
         }
 
+        public async Task<ApplicationUser> GetUserById(string userId)
+        {
+            try
+            {
+                var user = await _context.Users
+                                        .AsNoTracking()
+                                        .FirstOrDefaultAsync(u => u.Id == userId);
+                return user != null ? user : null;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error getting user by user id - {ex.Message}");
+                WatchLogger.LogError(ex.ToString(), $"Error getting user by user id - {ex.Message}");
+                throw;
+            }
+        }
+
         public async Task<UserWithRoles> GetUserByUniqueId(string uniqueId, string? userRole)
         {
             try
             {
                 var user = await _context.Users
+                    .AsNoTracking()
                     .FirstOrDefaultAsync(u => u.UniqueId == uniqueId);
                 if (user != null)
                 {

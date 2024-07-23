@@ -2,7 +2,7 @@ using SchoolManagementApi.Models;
 using SchoolManagementApi.Models.DocumentModels;
 using SchoolManagementApi.Models.UserModels;
 
-namespace SchoolManagementApi.Intefaces.Profiles
+namespace SchoolManagementApi.Interfaces.Profiles
 {
   public interface ITeachingStaffInterface
   {

@@ -178,7 +178,9 @@ namespace SchoolManagementApi.Controllers
       if (!string.IsNullOrEmpty(CurrentUserId))
         return Unauthorized("current user is already logged in");
 
-      var user = await _userManager.FindByNameAsync(loginDto.UserName);
+      var user = await _userManager.Users.FirstOrDefaultAsync(u => u.UserName == loginDto.UserName);
+      //var user = await _userManager.FindByEmailAsync(loginDto.UserName);
+
       if (user is null)
         return Unauthorized("Username not found!");
       
@@ -189,11 +191,12 @@ namespace SchoolManagementApi.Controllers
       var userRoles = await _userManager.GetRolesAsync(user);
       var authClaims = new List<Claim>
       {
-        new(ClaimTypes.Name, user.UserName!),
+        //new(ClaimTypes.Name, user.UserName!),
         new(ClaimTypes.NameIdentifier, user.Id.ToString()),
-        new(ClaimTypes.Email, user.Email!),
+        //new(ClaimTypes.Email, user.Email!),
+        new("organizationUniqueId", user.OrganizationId)
       };
-
+      
       foreach (var userRole in userRoles)
       {
         authClaims.Add(new Claim(ClaimTypes.Role, userRole));
@@ -204,6 +207,23 @@ namespace SchoolManagementApi.Controllers
       user.LoginCount ++;
       user.LastLogin = DateTime.UtcNow;
       await _userManager.UpdateAsync(user);
+      // var loginResponse = new LoginResponse
+      // {
+      //   Token = token,
+      //   OrganizationUniqueIdId = user.OrganizationId,
+      //   UniqueId = user.UniqueId,
+      //   Email = user.Email!,
+      //   FirstName = user.FirstName,
+      //   MiddleName = user.MiddleName,
+      //   LastName = user.LastName,
+      //   PhoneNumber = user.PhoneNumber!,
+      //   PercentageCompleted = user.PercentageCompleted,
+      //   IsActive = user.IsActive,
+      //   LoginCount = user.LoginCount,
+      //   DateJoined = user.CreatedAt,
+      //   UserRoles = userRoles
+      // };
+      // return Ok(loginResponse);\
       return Ok(token);
     }
 

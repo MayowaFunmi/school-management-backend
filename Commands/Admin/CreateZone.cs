@@ -3,7 +3,7 @@ using MediatR;
 using Microsoft.Extensions.Caching.Memory;
 using SchoolManagementApi.Constants;
 using SchoolManagementApi.DTOs;
-using SchoolManagementApi.Intefaces.Admin;
+using SchoolManagementApi.Interfaces.Admin;
 
 namespace SchoolManagementApi.Commands.Admin
 {

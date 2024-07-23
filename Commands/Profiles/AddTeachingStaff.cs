@@ -2,7 +2,7 @@ using System.Net;
 using MediatR;
 using SchoolManagementApi.Data;
 using SchoolManagementApi.DTOs;
-using SchoolManagementApi.Intefaces.Profiles;
+using SchoolManagementApi.Interfaces.Profiles;
 using SchoolManagementApi.Models.UserModels;
 using static SchoolManagementApi.Constants.DictionaryMaps;
 
@@ -72,7 +72,6 @@ namespace SchoolManagementApi.Commands.Profiles
             {
               Status = HttpStatusCode.OK.ToString(),
               Message = "Teacher profile created sucessfully",
-              Data = createdTeacher
             };
           }
           return new GenericResponse

@@ -4,14 +4,16 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SchoolManagementApi.Commands.Admin;
 using SchoolManagementApi.DTOs;
-using SchoolManagementApi.Intefaces.Admin;
+using SchoolManagementApi.Interfaces.Admin;
 using SchoolManagementApi.Queries.Admin;
+using SchoolManagementApi.Queries.Profiles;
 
 namespace SchoolManagementApi.Controllers
 {
-  public class AdminController(IAdminService adminService, IMediator mediator) : BaseController
+  public class AdminController(IAdminService adminService, IOrganizationService organizationService, IMediator mediator) : BaseController
   {
     private readonly IAdminService _adminService = adminService;
+    private readonly IOrganizationService _organizationService = organizationService;
     private readonly IMediator _mediator = mediator;
 
     [HttpGet]
@@ -26,6 +28,23 @@ namespace SchoolManagementApi.Controllers
         Message = $"{usersWithRoles.Count} users found",
         Data = usersWithRoles
       };
+    }
+
+    [HttpGet]
+    [Route("check-organization-status")]
+    [Authorize(Policy = "OrganizationAdmin")]
+    public async Task<IActionResult> CheckOrganizationDuplicate([FromQuery] string organizationName)
+    {
+      try
+      {
+        var response = await _organizationService.CheckOrganizationStatus(organizationName);
+        return response.Status == HttpStatusCode.OK.ToString()
+        ? Ok(response) : Conflict(response);
+      }
+      catch (Exception ex)
+      {
+        return StatusCode(500, $"An error occurred while processing your request - {ex.Message}");
+      }
     }
 
     [HttpPost]
@@ -75,8 +94,13 @@ namespace SchoolManagementApi.Controllers
             AdminId = adminId
         };
         var response = await _mediator.Send(request);
-        return response.Status == HttpStatusCode.OK.ToString()
-          ? Ok(response) : BadRequest(response);
+        return response.Status switch
+        {
+            "Conflict" => Conflict(response),
+            "NotFound" => NotFound(response),
+            "BadRequest" => BadRequest(response),
+            _=> Ok(response)
+        };
       }
       catch (Exception ex)
       {
@@ -562,6 +586,25 @@ namespace SchoolManagementApi.Controllers
         var response = await _mediator.Send(request);
         return response.Status == HttpStatusCode.OK.ToString()
           ? Ok(response) : BadRequest(response);
+      }
+      catch (Exception ex)
+      {
+        return StatusCode(500, $"An error occurred while processing your request - {ex.Message}");
+      }
+    }
+
+    [HttpGet]
+    [Route("get-user-by-id/{userId}")]
+    [Authorize]
+    public async Task<IActionResult> GetUserById(string userId)
+    {
+      try
+      {
+        if (string.IsNullOrEmpty(userId))
+          return BadRequest("user id cannot be empty");
+        var response = await _mediator.Send(new GetUserById.GetUserByIdQuery(userId));
+        return response.Status == HttpStatusCode.OK.ToString()
+          ? Ok(response) : NotFound(response);
       }
       catch (Exception ex)
       {

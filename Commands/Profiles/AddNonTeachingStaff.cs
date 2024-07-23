@@ -2,7 +2,7 @@ using System.Net;
 using MediatR;
 using SchoolManagementApi.Data;
 using SchoolManagementApi.DTOs;
-using SchoolManagementApi.Intefaces.Profiles;
+using SchoolManagementApi.Interfaces.Profiles;
 using SchoolManagementApi.Models.UserModels;
 using static SchoolManagementApi.Constants.DictionaryMaps;
 
@@ -13,7 +13,6 @@ namespace SchoolManagementApi.Commands.Profiles
     public class AddNonTeachingStaffCommand : IRequest<GenericResponse>
     {
       public string UserId { get; set; } = string.Empty;
-      public string OrganizationUniqueId { get; set; } = string.Empty;
       public string Title { get; set; } = string.Empty;
       public string MiddleName { get; set; } = string.Empty;
       public string Gender { get; set; } = string.Empty;

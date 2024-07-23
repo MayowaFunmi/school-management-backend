@@ -2,7 +2,7 @@ using SchoolManagementApi.DTOs;
 using SchoolManagementApi.Models;
 using SchoolManagementApi.Models.UserModels;
 
-namespace SchoolManagementApi.Intefaces.Admin
+namespace SchoolManagementApi.Interfaces.Admin
 {
   public interface ISchoolServices
   {

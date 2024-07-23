@@ -1,8 +1,8 @@
 using System.Net;
 using MediatR;
 using SchoolManagementApi.DTOs;
-using SchoolManagementApi.Intefaces.Profiles;
-using SchoolManagementApi.Intefaces.Uploads;
+using SchoolManagementApi.Interfaces.Profiles;
+using SchoolManagementApi.Interfaces.Uploads;
 
 namespace SchoolManagementApi.Commands.Uploads
 {

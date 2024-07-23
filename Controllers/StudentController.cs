@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SchoolManagementApi.Commands.Profiles;
 using SchoolManagementApi.Commands.Students;
-using SchoolManagementApi.Intefaces.Admin;
+using SchoolManagementApi.Interfaces.Admin;
 using SchoolManagementApi.Queries.Profiles;
 using SchoolManagementApi.Queries.School;
 using SchoolManagementApi.Queries.Students;

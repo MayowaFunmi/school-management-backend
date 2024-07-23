@@ -1,10 +1,12 @@
+using SchoolManagementApi.DTOs;
 using SchoolManagementApi.Models;
 using SchoolManagementApi.Models.UserModels;
 
-namespace SchoolManagementApi.Intefaces.Admin
+namespace SchoolManagementApi.Interfaces.Admin
 {
   public interface IOrganizationService
   {
+    Task<GenericResponse> CheckOrganizationStatus(string organizationName);
     Task<Organization?> CreateOrganization(Organization organization);
     Task<List<Organization>> RetrieveAdminOrganizations(string adminId);
     Task<List<Organization>> AllOrganizations();

@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using SchoolManagementApi.Data;
-using SchoolManagementApi.Intefaces.LoggerManager;
-using SchoolManagementApi.Intefaces.Profiles;
+using SchoolManagementApi.Interfaces.LoggerManager;
+using SchoolManagementApi.Interfaces.Profiles;
 using SchoolManagementApi.Models.UserModels;
 using WatchDog;
 

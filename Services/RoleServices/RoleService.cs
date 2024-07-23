@@ -3,8 +3,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using SchoolManagementApi.Data;
 using SchoolManagementApi.DTOs;
-using SchoolManagementApi.Intefaces.LoggerManager;
-using SchoolManagementApi.Intefaces.Roles;
+using SchoolManagementApi.Interfaces.LoggerManager;
+using SchoolManagementApi.Interfaces.Roles;
 using SchoolManagementApi.Models.UserModels;
 using WatchDog;
 

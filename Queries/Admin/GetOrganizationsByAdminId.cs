@@ -1,8 +1,8 @@
 using System.Net;
 using MediatR;
 using SchoolManagementApi.DTOs;
-using SchoolManagementApi.Intefaces.Admin;
-using SchoolManagementApi.Intefaces.LoggerManager;
+using SchoolManagementApi.Interfaces.Admin;
+using SchoolManagementApi.Interfaces.LoggerManager;
 using WatchDog;
 
 namespace SchoolManagementApi.Queries.Admin

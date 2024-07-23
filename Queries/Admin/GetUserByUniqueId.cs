@@ -1,7 +1,7 @@
 using System.Net;
 using MediatR;
 using SchoolManagementApi.DTOs;
-using SchoolManagementApi.Intefaces.Admin;
+using SchoolManagementApi.Interfaces.Admin;
 
 namespace SchoolManagementApi.Queries.Admin
 {
@@ -9,8 +9,8 @@ namespace SchoolManagementApi.Queries.Admin
   {
     public class GetUserByUniqueIdQuery : IRequest<GenericResponse>
     {
-      public string? UniqueId { get; set; }
-      public string? RoleName { get; set; }
+      public string UniqueId { get; set; } = string.Empty;
+      public string RoleName { get; set; } = string.Empty;
     }
 
     public class GetUserByUniqueIdHandler(IAdminService adminService) : IRequestHandler<GetUserByUniqueIdQuery, GenericResponse>

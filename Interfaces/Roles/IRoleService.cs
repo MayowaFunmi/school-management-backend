@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using SchoolManagementApi.DTOs;
 
-namespace SchoolManagementApi.Intefaces.Roles
+namespace SchoolManagementApi.Interfaces.Roles
 {
   public interface IRoleService
   {
