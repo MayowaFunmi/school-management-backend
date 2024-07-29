@@ -41,6 +41,12 @@ namespace SchoolManagementApi.Services.Admin
       {
         _context.Zones.Add(zone);
         var result = await _context.SaveChangesAsync() > 0;
+        // if (result)
+        // {
+        //   var org = await _context.Organizations.Include(o => o.Zones).FirstOrDefaultAsync(o => o.OrganizationId == zone.OrganizationId);
+        //   org?.Zones.Add(zone);
+        //   await _context.SaveChangesAsync();
+        // }
         return result;
       }
       catch (Exception ex)

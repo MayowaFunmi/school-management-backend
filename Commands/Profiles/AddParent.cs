@@ -42,7 +42,7 @@ namespace SchoolManagementApi.Commands.Profiles
           {
             return new GenericResponse
             {
-              Status = HttpStatusCode.OK.ToString(),
+              Status = HttpStatusCode.Conflict.ToString(),
               Message = $"parent profile already exists"
             };
           }

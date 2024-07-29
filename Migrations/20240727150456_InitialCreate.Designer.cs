@@ -13,7 +13,7 @@ using SchoolManagementApi.Data;
 namespace SchoolManagementApi.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240720024637_InitialCreate")]
+    [Migration("20240727150456_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -321,6 +321,10 @@ namespace SchoolManagementApi.Migrations
                     b.Property<string>("OrganizationUniqueId")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<List<string>>("States")
+                        .IsRequired()
+                        .HasColumnType("text[]");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -824,10 +828,6 @@ namespace SchoolManagementApi.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("Occupation")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("OrganizationUniqueId")
                         .IsRequired()
                         .HasColumnType("text");
 

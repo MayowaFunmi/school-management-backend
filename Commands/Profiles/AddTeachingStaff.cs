@@ -48,12 +48,12 @@ namespace SchoolManagementApi.Commands.Profiles
       {
         try
         {
-          var teacherProfile = await _teachingStaffInterface.TeachingStaffExists(request.UserId);
-          if (teacherProfile != null)
+          var teacherProfileExists = await _teachingStaffInterface.TeachingStaffExists(request.UserId);
+          if (teacherProfileExists)
           {
             return new GenericResponse
             {
-              Status = HttpStatusCode.OK.ToString(),
+              Status = HttpStatusCode.Conflict.ToString(),
               Message = $"Profile already exists"
             };
           }

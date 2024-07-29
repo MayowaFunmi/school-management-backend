@@ -52,12 +52,10 @@ namespace SchoolManagementApi.Controllers
     [Authorize(Policy = "OrganizationAdmin")]
     public async Task<IActionResult> CreateOrganization(CreateOrganization.CreateOrganizationsCommand request)
     {
-      Console.WriteLine($"organization name = {request.OrganizationName}");
-      Console.WriteLine($"Admin Id = {request.AdminId}");
       try
       {
-        if (string.IsNullOrEmpty(request.OrganizationName) || string.IsNullOrEmpty(request.AdminId))
-          return BadRequest("Organization Name cannot be empty");
+        if (string.IsNullOrEmpty(request.OrganizationName) || string.IsNullOrEmpty(request.AdminId) || request.States.Count == 0)
+          return BadRequest("All fields are required");
 
         if (string.IsNullOrEmpty(CurrentUserId))
           return Unauthorized("You are not authenticated");
@@ -136,6 +134,27 @@ namespace SchoolManagementApi.Controllers
           return BadRequest("Logged in user and staff id are not the same");
 
         var response = await _mediator.Send(new GetOrganizationsByAdminId.GetOrganizationByAdminIdQuery(adminId));
+        return response.Status == HttpStatusCode.OK.ToString()
+          ? Ok(response) : NotFound(response);
+      }
+      catch (Exception ex)
+      {
+        return StatusCode(500, $"An error occurred while processing your request - {ex.Message}");
+      }
+    }
+
+    [HttpGet]
+    [Route("get-organization-by-id/{organizationId}")]
+    [Authorize]
+
+    public async Task<IActionResult> GetOrganizationById(string organizationId)
+    {
+      try
+      {
+        if (string.IsNullOrEmpty(organizationId))
+          return BadRequest("organization id cannot be empty");
+
+        var response = await _mediator.Send(new GetOrganizationById.GetOrganizationByIdQuery(organizationId));
         return response.Status == HttpStatusCode.OK.ToString()
           ? Ok(response) : NotFound(response);
       }

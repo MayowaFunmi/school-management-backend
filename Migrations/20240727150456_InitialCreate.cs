@@ -191,6 +191,7 @@ namespace SchoolManagementApi.Migrations
                     OrganizationId = table.Column<Guid>(type: "uuid", nullable: false),
                     OrganizationUniqueId = table.Column<string>(type: "text", nullable: false),
                     AdminId = table.Column<string>(type: "text", nullable: false),
+                    States = table.Column<List<string>>(type: "text[]", nullable: false),
                     Name = table.Column<string>(type: "text", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
@@ -384,7 +385,6 @@ namespace SchoolManagementApi.Migrations
                 {
                     ParentId = table.Column<Guid>(type: "uuid", nullable: false),
                     UserId = table.Column<string>(type: "text", nullable: false),
-                    OrganizationUniqueId = table.Column<string>(type: "text", nullable: false),
                     StudentSchoolId = table.Column<Guid>(type: "uuid", nullable: false),
                     Title = table.Column<string>(type: "text", nullable: false),
                     ProfilePicture = table.Column<string>(type: "text", nullable: false),

@@ -9,6 +9,7 @@ namespace SchoolManagementApi.Interfaces.Admin
     Task<GenericResponse> CheckOrganizationStatus(string organizationName);
     Task<Organization?> CreateOrganization(Organization organization);
     Task<List<Organization>> RetrieveAdminOrganizations(string adminId);
+    Task<Organization?> GetOrganizationById(string organizationId);
     Task<List<Organization>> AllOrganizations();
     Task<List<TeachingStaff>> GetAllTeachersInOrganization(string organizationId, int page, int pageSize);
 

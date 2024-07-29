@@ -75,15 +75,11 @@ namespace SchoolManagementApi.Services.Profiles
       }
     }
 
-    public async Task<NonTeachingStaff> NonTeachingStaffExists(string userId)
+    public async Task<bool> NonTeachingStaffExists(string userId)
     {
       try
       {
-        var staff = await _context.NonTeachingStaffs.FirstOrDefaultAsync(t => t.UserId == userId);
-        if (staff != null)
-          return staff;
-        else
-          return null;
+        return await _context.NonTeachingStaffs.AsNoTracking().AnyAsync(t => t.UserId == userId);
       }
       catch (Exception ex)
       {

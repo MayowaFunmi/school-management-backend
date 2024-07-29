@@ -46,11 +46,11 @@ namespace SchoolManagementApi.Commands.Profiles
         try
         {
           var checkStaffExists = await _nonTeachingStaffInterface.NonTeachingStaffExists(request.UserId);
-          if (checkStaffExists != null)
+          if (checkStaffExists)
           {
             return new GenericResponse
             {
-              Status = HttpStatusCode.OK.ToString(),
+              Status = HttpStatusCode.Conflict.ToString(),
               Message = $"Profile already exists"
             };
           }
@@ -70,7 +70,6 @@ namespace SchoolManagementApi.Commands.Profiles
             {
               Status = HttpStatusCode.OK.ToString(),
               Message = "Non Teaching Staff profile created sucessfully",
-              Data = createdStaff
             };
           }
           return new GenericResponse

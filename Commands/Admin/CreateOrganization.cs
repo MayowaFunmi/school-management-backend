@@ -19,6 +19,7 @@ namespace SchoolManagementApi.Commands.Admin
     {
       public string OrganizationName { get; set; } = string.Empty;
       public string AdminId { get; set; } = string.Empty;
+      public List<string> States { get; set; } = [];
     }
 
     public class CreateOrganizationHandler(UserManager<ApplicationUser> userManager, ApplicationDbContext context, IOrganizationService organizationService, ILoggerManager logger) : IRequestHandler<CreateOrganizationsCommand, GenericResponse>
@@ -35,7 +36,7 @@ namespace SchoolManagementApi.Commands.Admin
           return new GenericResponse
           {
             Status = HttpStatusCode.BadRequest.ToString(),
-            Message = "Admin Id or Organization name cannot eb empty",
+            Message = "Admin Id or Organization name cannot be empty",
           };
         }
 
@@ -59,7 +60,8 @@ namespace SchoolManagementApi.Commands.Admin
           {
             OrganizationUniqueId = GenerateUserCode.GenerateOrgUniqueId(),
             AdminId = request.AdminId,
-            Name = request.OrganizationName.ToLower()
+            Name = request.OrganizationName.ToLower(),
+            States = request.States
           };
           // use NLP to check if similar school exists to avoid duplicate entry
           var createdOrganization = await _organizationService.CreateOrganization(organization);
