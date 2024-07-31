@@ -10,6 +10,7 @@ namespace SchoolManagementApi.Interfaces.Admin
     Task<Organization?> CreateOrganization(Organization organization);
     Task<List<Organization>> RetrieveAdminOrganizations(string adminId);
     Task<Organization?> GetOrganizationById(string organizationId);
+    Task<Organization?> GetOrganizationByUniqueId(string organizationUniqueId);
     Task<List<Organization>> AllOrganizations();
     Task<List<TeachingStaff>> GetAllTeachersInOrganization(string organizationId, int page, int pageSize);
 

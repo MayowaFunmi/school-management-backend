@@ -163,6 +163,26 @@ namespace SchoolManagementApi.Controllers
         return StatusCode(500, $"An error occurred while processing your request - {ex.Message}");
       }
     }
+    
+    [HttpGet]
+    [Route("get-organization-by-unique-id/{organizationUniqueid}")]
+
+    public async Task<IActionResult> GetOrganizationByUniqueId(string organizationUniqueid)
+    {
+      try
+      {
+        if (string.IsNullOrEmpty(organizationUniqueid))
+          return BadRequest("organization unique id cannot be empty");
+
+        var response = await _mediator.Send(new GetOrganizationByUniqueId.GetOrganizationByUniqueIdQuery(organizationUniqueid));
+        return response.Status == HttpStatusCode.OK.ToString()
+          ? Ok(response) : NotFound(response);
+      }
+      catch (Exception ex)
+      {
+        return StatusCode(500, $"An error occurred while processing your request - {ex.Message}");
+      }
+    }
 
     [HttpGet]
     [Route("get-all-organizations")]

@@ -69,14 +69,14 @@ namespace SchoolManagementApi.Services.Admin
             }
         }
 
-        public async Task<ApplicationUser> GetUserById(string userId)
+        public async Task<ApplicationUser?> GetUserById(string userId)
         {
             try
             {
                 var user = await _context.Users
                                         .AsNoTracking()
                                         .FirstOrDefaultAsync(u => u.Id == userId);
-                return user != null ? user : null;
+                return user ?? null;
             }
             catch (Exception ex)
             {

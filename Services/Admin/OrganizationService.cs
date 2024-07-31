@@ -87,6 +87,20 @@ namespace SchoolManagementApi.Services.Admin
       }
     }
 
+    public async Task<Organization?> GetOrganizationByUniqueId(string organizationUniqueId)
+    {
+      try
+      {
+        return await _context.Organizations.FirstOrDefaultAsync(o => o.OrganizationUniqueId == organizationUniqueId);
+      }
+      catch (Exception ex)
+      {
+        _logger.LogError($"Error getting organization by unique Id - {ex.Message}");
+        WatchLogger.LogError(ex.ToString(), $"Error getting organization by unique Id - {ex.Message}");
+        throw;
+      }
+    }
+
     public async Task<Organization?> CreateOrganization(Organization organization)
     {
       try
