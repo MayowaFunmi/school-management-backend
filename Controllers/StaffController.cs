@@ -5,13 +5,15 @@ using Microsoft.AspNetCore.Mvc;
 using SchoolManagementApi.Commands.Profiles;
 using SchoolManagementApi.Commands.Uploads;
 using SchoolManagementApi.DTOs;
+using SchoolManagementApi.Interfaces.Profiles;
 using SchoolManagementApi.Queries.Profiles;
 
 namespace SchoolManagementApi.Controllers
 {
-  public class StaffController(IMediator mediator) : BaseController
+  public class StaffController(ITeachingStaffInterface teachingStaff, IMediator mediator) : BaseController
   {
     private readonly IMediator _mediator = mediator;
+    private readonly ITeachingStaffInterface _teachingStaff = teachingStaff;
     
     [HttpPost]
     [Route("add-teaching-staff-profile")]
@@ -96,6 +98,35 @@ namespace SchoolManagementApi.Controllers
         var response = await _mediator.Send(new GetNonTeachingStaffById.GetNonTeachingStaffByIdQuery(staffId));
         return response.Status == HttpStatusCode.OK.ToString()
           ? Ok(response) : BadRequest(response);
+      }
+      catch (Exception ex)
+      {
+        return StatusCode(500, $"An error occurred while processing your request - {ex.Message}");
+      }
+    }
+
+    [HttpGet]
+    [Route("get-teacher-current-classes")]
+    [Authorize]
+    public async Task<IActionResult> GetTeacherCurrentClasses([FromQuery] List<string> classArmIds)
+    {
+      try
+      {
+        var classes = await _teachingStaff.GetTeacherClasses(classArmIds);
+        if (classes.Count == 0)
+        {
+          return NotFound(new GenericResponse
+          {
+            Status = HttpStatusCode.OK.ToString(),
+            Message = "No Class Found",
+          });
+        }
+        return Ok(new GenericResponse
+        {
+          Status = HttpStatusCode.OK.ToString(),
+          Message = "Class arms retrieved from ids successfully",
+          Data = classes
+        });
       }
       catch (Exception ex)
       {

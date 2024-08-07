@@ -16,6 +16,7 @@ namespace SchoolManagementApi.Controllers
 
     [HttpGet]
     [Route("get-schools-by-id")]
+    [Authorize]
     public async Task<IActionResult> SchoolsById([FromQuery] List<string> schoolIds)
     {
       var schools = await _schoolServices.GetSchoolByIdList(schoolIds);
@@ -392,7 +393,7 @@ namespace SchoolManagementApi.Controllers
 
     [HttpPost]
     [Route("add-school-session")]
-    //[Authorize(Policy = "AdminOrganizationAdmin")]
+    [Authorize(Policy = "AdminOrganizationAdmin")]
     public async Task<IActionResult> AddSchoolSession([FromBody] SessionDto sessionDto)
     {
       if (string.IsNullOrEmpty(sessionDto.Name) || string.IsNullOrEmpty(sessionDto.SchoolId))
@@ -425,7 +426,7 @@ namespace SchoolManagementApi.Controllers
 
     [HttpPost]
     [Route("add-school-terms")]
-    //[Authorize(Policy = "AdminOrganizationAdmin")]
+    [Authorize(Policy = "AdminOrganizationAdmin")]
     public async Task<IActionResult> AddSchoolTerms(SchoolTermDto schoolTermDto)
     {
       try

@@ -346,9 +346,10 @@ namespace SchoolManagementApi.Services.Admin
       try
       {
         return await _context.Schools
+          .Where(s => schoolIds.Contains(s.SchoolId.ToString()))
           .OrderBy(s => s.Name)
-        .Where(s => schoolIds.Contains(s.SchoolId.ToString()))
-        .ToListAsync();
+          .AsNoTracking()
+          .ToListAsync();
       }
       catch (Exception ex)
       {
@@ -396,6 +397,7 @@ namespace SchoolManagementApi.Services.Admin
       {
         return await _context.ClassArms
           .Where(d => d.SchoolId.ToString() == schoolId)
+          .AsNoTracking()
           .ToListAsync();
       }
       catch (Exception ex)

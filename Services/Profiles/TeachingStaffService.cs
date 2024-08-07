@@ -80,6 +80,24 @@ namespace SchoolManagementApi.Services.Profiles
       }
     }
 
+    public async Task<List<ClassArms>> GetTeacherClasses(List<string> classArmIds)
+    {
+      try
+      {
+        return await _context.ClassArms
+          .Where(c => classArmIds.Contains(c.ClassArmId.ToString()))
+          .AsNoTracking()
+          .OrderBy(c => c.Name)
+          .ToListAsync();
+      }
+      catch (Exception ex)
+      {
+        _logger.LogError($"Error getting teacher's current classes - {ex.Message}");
+        WatchLogger.LogError(ex.ToString(), $"Error getting teacher's current classes - {ex.Message}");
+        throw;
+      }
+    }
+
     public async Task<string> OrganizationExists(string organizationUniqueId)
     {
       var organization = await _context.Organizations.FirstOrDefaultAsync(o => o.OrganizationUniqueId == organizationUniqueId);

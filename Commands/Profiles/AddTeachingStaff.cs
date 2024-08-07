@@ -14,7 +14,6 @@ namespace SchoolManagementApi.Commands.Profiles
     {
       public string UserId { get; set; } = string.Empty;
       public string Title { get; set; } = string.Empty;
-      public string MiddleName { get; set; } = string.Empty;
       public string Gender { get; set; } = string.Empty;
       public DateTime DateOfBirth { get; set; }
       public int Age { get; set; }
@@ -37,6 +36,7 @@ namespace SchoolManagementApi.Commands.Profiles
       public string PublishedWork { get; set; } = string.Empty;
       public string CurrentSubjectId { get; set; } = string.Empty;
       public List<string> OtherSubjects { get; set; } = [];
+      public List<string> CurrentClasses { get; set; } = [];
     }
 
     public class AddTeachingStaffHandler(ITeachingStaffInterface teachingStaffInterface, ApplicationDbContext context) : IRequestHandler<AddTeachingStaffCommand, GenericResponse>
@@ -117,7 +117,8 @@ namespace SchoolManagementApi.Commands.Profiles
             PreviousSchoolsIds = request.PreviousSchoolsIds,
             PublishedWork = request.PublishedWork,
             CurrentSubjectId = Guid.Parse(request.CurrentSubjectId),
-            OtherSubjects = request.OtherSubjects
+            OtherSubjects = request.OtherSubjects,
+            CurrentClasses = request.CurrentClasses
           };
       }
     }

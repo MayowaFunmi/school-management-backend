@@ -474,7 +474,7 @@ namespace SchoolManagementApi.Controllers
       {
         if (string.IsNullOrEmpty(CurrentUserId))
           return Unauthorized("You are not an admin");
-        if (string.IsNullOrEmpty(schoolId) || string.IsNullOrEmpty(request.Name))
+        if (string.IsNullOrEmpty(schoolId) || request.DepartmentNames.Count == 0)
           return BadRequest("All fields are required");
         
         request.AdminId = CurrentUserId;

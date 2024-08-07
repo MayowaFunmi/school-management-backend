@@ -25,13 +25,13 @@ namespace SchoolManagementApi.Queries.Profiles
             {
               Status = HttpStatusCode.NotFound.ToString(),
               Message = "user not found",
-              Data = user
             };
           }
           return new GenericResponse
           {
             Status = HttpStatusCode.OK.ToString(),
             Message = "user retrieved successfully",
+            Data = user
           };
         }
         catch (Exception ex)

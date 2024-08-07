@@ -12,12 +12,14 @@ using SchoolManagementApi.Configurations;
 using SchoolManagementApi.Constants;
 using SchoolManagementApi.Data;
 using SchoolManagementApi.Interfaces.Admin;
+using SchoolManagementApi.Interfaces.LessonNotes;
 using SchoolManagementApi.Interfaces.LoggerManager;
 using SchoolManagementApi.Interfaces.Profiles;
 using SchoolManagementApi.Interfaces.Roles;
 using SchoolManagementApi.Interfaces.Uploads;
 using SchoolManagementApi.Models.UserModels;
 using SchoolManagementApi.Services.Admin;
+using SchoolManagementApi.Services.LessonNotes;
 using SchoolManagementApi.Services.LoggerManager;
 using SchoolManagementApi.Services.Profiles;
 using SchoolManagementApi.Services.RoleServices;
@@ -127,6 +129,7 @@ builder.Services.AddScoped<IFileService, FileService>();
 builder.Services.AddScoped<ISubjectService, SubjectService>();
 builder.Services.AddScoped<IParentService, ParentService>();
 builder.Services.AddScoped<IStudentService, StudentService>();
+builder.Services.AddScoped<ILessonNoteServices, LessonNoteServices>();
 
 builder.Services.AddCors(options =>
     {

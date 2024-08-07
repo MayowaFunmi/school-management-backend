@@ -9,6 +9,7 @@ namespace SchoolManagementApi.Interfaces.Profiles
     Task<TeachingStaff> AddTeachingStaff(TeachingStaff teachingStaff);
     Task<TeachingStaff> GetTeacherById(string userId);
     Task<TeachingStaff> GetTeacherByUniqueId(string uniqueId);
+    Task<List<ClassArms>> GetTeacherClasses(List<string> classArmIds);
     Task<bool> TeachingStaffExists(string userId);
     Task<List<Zone>> AllOrganizationZones(string organizationUniqueId);
     Task<string> OrganizationExists(string organizationUniqueId);
