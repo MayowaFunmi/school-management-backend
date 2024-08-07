@@ -11,5 +11,6 @@ namespace SchoolManagementApi.Models.UserModels
     public Guid CurrentSubjectId { get; set; }
     public virtual Subject CurrentSubject { get; set; } = null!;
     public List<string> OtherSubjects { get; set; } = [];
+    public List<string> CurrentClasses { get; set; } = [];
   }
 }

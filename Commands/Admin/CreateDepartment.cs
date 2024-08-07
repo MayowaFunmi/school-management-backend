@@ -1,7 +1,7 @@
 using System.Net;
 using MediatR;
 using SchoolManagementApi.DTOs;
-using SchoolManagementApi.Intefaces.Admin;
+using SchoolManagementApi.Interfaces.Admin;
 using SchoolManagementApi.Models;
 
 namespace SchoolManagementApi.Commands.Admin
@@ -11,8 +11,8 @@ namespace SchoolManagementApi.Commands.Admin
     public class CreateDepartmentCommand : IRequest<GenericResponse>
     {
       public string AdminId { get; set; } = string.Empty;
-      public string? SchoolId { get; set; }
-      public string? Name { get; set; }
+      public string SchoolId { get; set; } = string.Empty;
+      public List<string> DepartmentNames { get; set; } = [];
     }
 
     public class CreateDepartmentHandler(IDepartmentServices departmentServices) : IRequestHandler<CreateDepartmentCommand, GenericResponse>
@@ -23,45 +23,61 @@ namespace SchoolManagementApi.Commands.Admin
       {
         try
         {
-          var checkDept = await _departmentServices.DepartmentExists(request.Name!);
-          if (!checkDept)
+          var existingDepts = new List<string>();
+          var newDepts = new List<string>();
+
+          foreach (var dept in request.DepartmentNames)
           {
-            return new GenericResponse
+            if (await _departmentServices.DepartmentExists(dept))
             {
-              Status = HttpStatusCode.BadRequest.ToString(),
-              Message = $"{request.Name} Department already exists",
-            };
-          }
-          var department = new Department
-          {
-            SchoolId = Guid.Parse(request.SchoolId!),
-            Name = request.Name!,
-          };
-          var dept = await _departmentServices.AddDepartment(department);
-          if (dept != null)
-          {
-            return new GenericResponse
+              existingDepts.Add(dept);
+            }
+            else
             {
-              Status = HttpStatusCode.OK.ToString(),
-              Message = "Department Created Successfully",
-              Data = dept
-            };
+              var department = new Department
+              {
+                SchoolId = Guid.Parse(request.SchoolId!),
+                Name = dept,
+              };
+              var newDept = await _departmentServices.AddDepartment(department);
+              if (newDept != null)
+                newDepts.Add(dept);
+            }
           }
+
+          var joinedNew = newDepts.Count > 0 ? string.Join(", ", newDepts) : null;
+          var joinedExisting = existingDepts.Count > 0 ? string.Join(", ", existingDepts) : null;
+          string message;
+
+          if (joinedNew == null)
+          {
+            message = "All departments already exist";
+          }
+          else if (joinedExisting == null)
+          {
+            message = "All departments added successfully";
+          }
+          else
+          {
+            message = $"{joinedNew} departments created successfully while {joinedExisting} already exist";
+          }
+
           return new GenericResponse
           {
-            Status = HttpStatusCode.BadRequest.ToString(),
-            Message = "Failed to create Department",
+            Status = HttpStatusCode.OK.ToString(),
+            Message = message,
           };
         }
         catch (Exception ex)
         {
-          return new GenericResponse
-          {
-            Status = HttpStatusCode.InternalServerError.ToString(),
-            Message = $"An internal server error occurred - {ex.Message}",
-          };
+            return new GenericResponse
+            {
+                Status = HttpStatusCode.InternalServerError.ToString(),
+                Message = $"An internal server error occurred - {ex.Message}",
+            };
         }
       }
+
     }
   }
 }

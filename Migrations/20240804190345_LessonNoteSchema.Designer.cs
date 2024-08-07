@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
+using SchoolManagementApi.DTOs;
 using SchoolManagementApi.Data;
 
 #nullable disable
@@ -13,8 +14,8 @@ using SchoolManagementApi.Data;
 namespace SchoolManagementApi.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240609125112_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20240804190345_LessonNoteSchema")]
+    partial class LessonNoteSchema
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -158,6 +159,40 @@ namespace SchoolManagementApi.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("SchoolManagementApi.DTOs.CustomField", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Key")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid?>("LessonNoteTemplateId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("LessonPeriodId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("LessonPeriodTemplateId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Value")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LessonNoteTemplateId");
+
+                    b.HasIndex("LessonPeriodId");
+
+                    b.HasIndex("LessonPeriodTemplateId");
+
+                    b.ToTable("CustomField");
+                });
+
             modelBuilder.Entity("SchoolManagementApi.Models.ClassArms", b =>
                 {
                     b.Property<Guid>("ClassArmId")
@@ -223,7 +258,7 @@ namespace SchoolManagementApi.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid?>("StudentId1")
+                    b.Property<Guid>("StudentId1")
                         .HasColumnType("uuid");
 
                     b.HasKey("AttendanceId");
@@ -301,6 +336,180 @@ namespace SchoolManagementApi.Migrations
                     b.ToTable("DocumentFiles");
                 });
 
+            modelBuilder.Entity("SchoolManagementApi.Models.Lessons.LessonNote", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("ClassArmId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("ClassArmId1")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<List<CustomField>>("CustomFields")
+                        .IsRequired()
+                        .HasColumnType("jsonb");
+
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("InstructionalAid")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsTemplate")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("ReferenceBook")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("SubTopic")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("SubjectId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("SubjectId1")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("TeacherId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Topic")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("WeekNumber")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClassArmId1");
+
+                    b.HasIndex("SubjectId1");
+
+                    b.HasIndex("TeacherId");
+
+                    b.ToTable("LessonNotes");
+                });
+
+            modelBuilder.Entity("SchoolManagementApi.Models.Lessons.LessonNoteTemplate", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("TemplateName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("LessonNoteTemplates");
+                });
+
+            modelBuilder.Entity("SchoolManagementApi.Models.Lessons.LessonPeriod", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Assignment")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("BehaviouralObjective")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Conclusion")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Evaluations")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("LessonNotesId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("LessonNotesId1")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Presentations")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("PreviousKnowledge")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("SubTopic")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LessonNotesId1");
+
+                    b.ToTable("LessonPeriods");
+                });
+
+            modelBuilder.Entity("SchoolManagementApi.Models.Lessons.LessonPeriodTemplate", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("TemplateId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("TemplateNoteId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TemplateNoteId");
+
+                    b.ToTable("LessonPeriodTemplates");
+                });
+
             modelBuilder.Entity("SchoolManagementApi.Models.Organization", b =>
                 {
                     b.Property<Guid>("OrganizationId")
@@ -321,6 +530,10 @@ namespace SchoolManagementApi.Migrations
                     b.Property<string>("OrganizationUniqueId")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<List<string>>("States")
+                        .IsRequired()
+                        .HasColumnType("text[]");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -346,6 +559,7 @@ namespace SchoolManagementApi.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("AdminId")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<DateTime>("CreatedAt")
@@ -432,6 +646,7 @@ namespace SchoolManagementApi.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("SchoolSessionId")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<Guid?>("SchoolSessionId1")
@@ -496,7 +711,7 @@ namespace SchoolManagementApi.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid>("SchoolSessionId1")
+                    b.Property<Guid?>("SchoolSessionId1")
                         .HasColumnType("uuid");
 
                     b.Property<string>("SubjectId")
@@ -536,14 +751,14 @@ namespace SchoolManagementApi.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid>("StudentId1")
+                    b.Property<Guid?>("StudentId1")
                         .HasColumnType("uuid");
 
                     b.Property<string>("StudentsCARecordId")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid>("StudentsCARecordTestId")
+                    b.Property<Guid?>("StudentsCARecordTestId")
                         .HasColumnType("uuid");
 
                     b.HasKey("StudentScoresId");
@@ -625,6 +840,10 @@ namespace SchoolManagementApi.Migrations
 
                     b.Property<int>("LoginCount")
                         .HasColumnType("integer");
+
+                    b.Property<string>("MiddleName")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<string>("NormalizedEmail")
                         .HasMaxLength(256)
@@ -734,14 +953,6 @@ namespace SchoolManagementApi.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("MiddleName")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("OrganizationUniqueId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<List<string>>("PreviousSchoolsIds")
                         .IsRequired()
                         .HasColumnType("text[]");
@@ -826,10 +1037,6 @@ namespace SchoolManagementApi.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("Occupation")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("OrganizationUniqueId")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -982,6 +1189,10 @@ namespace SchoolManagementApi.Migrations
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<List<string>>("CurrentClasses")
+                        .IsRequired()
+                        .HasColumnType("text[]");
+
                     b.Property<Guid>("CurrentPostingSchoolId")
                         .HasColumnType("uuid");
 
@@ -1017,14 +1228,6 @@ namespace SchoolManagementApi.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("MaritalStatus")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("MiddleName")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("OrganizationUniqueId")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -1100,6 +1303,7 @@ namespace SchoolManagementApi.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<List<string>>("LocalGovtAreas")
+                        .IsRequired()
                         .HasColumnType("text[]");
 
                     b.Property<string>("Name")
@@ -1110,6 +1314,7 @@ namespace SchoolManagementApi.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<string>("State")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<DateTime>("UpdatedAt")
@@ -1173,6 +1378,21 @@ namespace SchoolManagementApi.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("SchoolManagementApi.DTOs.CustomField", b =>
+                {
+                    b.HasOne("SchoolManagementApi.Models.Lessons.LessonNoteTemplate", null)
+                        .WithMany("CustomFields")
+                        .HasForeignKey("LessonNoteTemplateId");
+
+                    b.HasOne("SchoolManagementApi.Models.Lessons.LessonPeriod", null)
+                        .WithMany("CustomFields")
+                        .HasForeignKey("LessonPeriodId");
+
+                    b.HasOne("SchoolManagementApi.Models.Lessons.LessonPeriodTemplate", null)
+                        .WithMany("CustomFields")
+                        .HasForeignKey("LessonPeriodTemplateId");
+                });
+
             modelBuilder.Entity("SchoolManagementApi.Models.ClassArms", b =>
                 {
                     b.HasOne("SchoolManagementApi.Models.Department", "Department")
@@ -1192,7 +1412,9 @@ namespace SchoolManagementApi.Migrations
                 {
                     b.HasOne("SchoolManagementApi.Models.UserModels.Student", "Student")
                         .WithMany()
-                        .HasForeignKey("StudentId1");
+                        .HasForeignKey("StudentId1")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Student");
                 });
@@ -1229,6 +1451,55 @@ namespace SchoolManagementApi.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("SchoolManagementApi.Models.Lessons.LessonNote", b =>
+                {
+                    b.HasOne("SchoolManagementApi.Models.ClassArms", "ClassArm")
+                        .WithMany()
+                        .HasForeignKey("ClassArmId1")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SchoolManagementApi.Models.Subject", "Subject")
+                        .WithMany()
+                        .HasForeignKey("SubjectId1")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SchoolManagementApi.Models.UserModels.ApplicationUser", "Teacher")
+                        .WithMany()
+                        .HasForeignKey("TeacherId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ClassArm");
+
+                    b.Navigation("Subject");
+
+                    b.Navigation("Teacher");
+                });
+
+            modelBuilder.Entity("SchoolManagementApi.Models.Lessons.LessonPeriod", b =>
+                {
+                    b.HasOne("SchoolManagementApi.Models.Lessons.LessonNote", "LessonNotes")
+                        .WithMany("Periods")
+                        .HasForeignKey("LessonNotesId1")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("LessonNotes");
+                });
+
+            modelBuilder.Entity("SchoolManagementApi.Models.Lessons.LessonPeriodTemplate", b =>
+                {
+                    b.HasOne("SchoolManagementApi.Models.Lessons.LessonNoteTemplate", "TemplateNote")
+                        .WithMany("TemplatePeriods")
+                        .HasForeignKey("TemplateNoteId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("TemplateNote");
+                });
+
             modelBuilder.Entity("SchoolManagementApi.Models.Organization", b =>
                 {
                     b.HasOne("SchoolManagementApi.Models.UserModels.ApplicationUser", "Admin")
@@ -1244,7 +1515,9 @@ namespace SchoolManagementApi.Migrations
                 {
                     b.HasOne("SchoolManagementApi.Models.UserModels.ApplicationUser", "Admin")
                         .WithMany()
-                        .HasForeignKey("AdminId");
+                        .HasForeignKey("AdminId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("SchoolManagementApi.Models.Zone", "Zone")
                         .WithMany("Schools")
@@ -1280,9 +1553,7 @@ namespace SchoolManagementApi.Migrations
                 {
                     b.HasOne("SchoolManagementApi.Models.SchoolSession", "SchoolSession")
                         .WithMany()
-                        .HasForeignKey("SchoolSessionId1")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("SchoolSessionId1");
 
                     b.Navigation("SchoolSession");
                 });
@@ -1291,15 +1562,12 @@ namespace SchoolManagementApi.Migrations
                 {
                     b.HasOne("SchoolManagementApi.Models.UserModels.Student", "Student")
                         .WithMany()
-                        .HasForeignKey("StudentId1")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("StudentId1");
 
                     b.HasOne("SchoolManagementApi.Models.StudentsCARecord", "StudentsCARecord")
                         .WithMany("StudentsScores")
                         .HasForeignKey("StudentsCARecordTestId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.Navigation("Student");
 
@@ -1452,6 +1720,28 @@ namespace SchoolManagementApi.Migrations
                         .HasForeignKey("OrganizationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("SchoolManagementApi.Models.Lessons.LessonNote", b =>
+                {
+                    b.Navigation("Periods");
+                });
+
+            modelBuilder.Entity("SchoolManagementApi.Models.Lessons.LessonNoteTemplate", b =>
+                {
+                    b.Navigation("CustomFields");
+
+                    b.Navigation("TemplatePeriods");
+                });
+
+            modelBuilder.Entity("SchoolManagementApi.Models.Lessons.LessonPeriod", b =>
+                {
+                    b.Navigation("CustomFields");
+                });
+
+            modelBuilder.Entity("SchoolManagementApi.Models.Lessons.LessonPeriodTemplate", b =>
+                {
+                    b.Navigation("CustomFields");
                 });
 
             modelBuilder.Entity("SchoolManagementApi.Models.Organization", b =>

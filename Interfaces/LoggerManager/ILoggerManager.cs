@@ -1,4 +1,4 @@
-namespace SchoolManagementApi.Intefaces.LoggerManager
+namespace SchoolManagementApi.Interfaces.LoggerManager
 {
   public interface ILoggerManager
   {

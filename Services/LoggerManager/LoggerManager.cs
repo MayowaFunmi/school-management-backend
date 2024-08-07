@@ -1,5 +1,5 @@
 using NLog;
-using SchoolManagementApi.Intefaces.LoggerManager;
+using SchoolManagementApi.Interfaces.LoggerManager;
 
 namespace SchoolManagementApi.Services.LoggerManager
 {

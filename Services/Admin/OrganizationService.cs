@@ -1,10 +1,13 @@
+using System.Net;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using SchoolManagementApi.Data;
-using SchoolManagementApi.Intefaces.Admin;
-using SchoolManagementApi.Intefaces.LoggerManager;
+using SchoolManagementApi.DTOs;
+using SchoolManagementApi.Interfaces.Admin;
+using SchoolManagementApi.Interfaces.LoggerManager;
 using SchoolManagementApi.Models;
 using SchoolManagementApi.Models.UserModels;
+using SchoolManagementApi.Utilities;
 using WatchDog;
 
 namespace SchoolManagementApi.Services.Admin
@@ -30,6 +33,70 @@ namespace SchoolManagementApi.Services.Admin
       {
         _logger.LogError($"Error getting all organizations - {ex.Message}");
         WatchLogger.LogError(ex.ToString(), $"Error getting all organizations - {ex.Message}");
+        throw;
+      }
+    }
+
+    public async Task<GenericResponse> CheckOrganizationStatus(string organizationName)
+    {
+      try
+      {
+        // check if organization exists
+        var organizations = await _context.Organizations
+                                          .Include(o => o.Admin)
+                                          .AsNoTracking()
+                                          .ToListAsync();
+        List<string> names = organizations.Select(o => o.Name.ToLower()).ToList();
+        var similarOrganization = SimilarityCheck.FindSimilarRecord(organizationName, names, 12);
+
+        if (!string.IsNullOrEmpty(similarOrganization))
+        {
+          var getOrg = organizations.FirstOrDefault(o => o.Name == similarOrganization);
+          return new GenericResponse
+          {
+            Status = HttpStatusCode.Conflict.ToString(),
+            Message = "Similar organization already exists",
+            Data = getOrg
+          };
+        }
+        return new GenericResponse
+        {
+          Status = HttpStatusCode.OK.ToString(),
+          Message = "No similar organization found",
+        };
+      }
+      catch (Exception ex)
+      {
+        _logger.LogError($"Error getting all organizations - {ex.Message}");
+        WatchLogger.LogError(ex.ToString(), $"Error getting all organizations - {ex.Message}");
+        throw;
+      }
+    }
+
+    public async Task<Organization?> GetOrganizationById(string organizationId)
+    {
+      try
+      {
+        return await _context.Organizations.FirstOrDefaultAsync(o => o.OrganizationId.ToString() == organizationId);
+      }
+      catch (Exception ex)
+      {
+        _logger.LogError($"Error getting organization by Id - {ex.Message}");
+        WatchLogger.LogError(ex.ToString(), $"Error getting organization by Id - {ex.Message}");
+        throw;
+      }
+    }
+
+    public async Task<Organization?> GetOrganizationByUniqueId(string organizationUniqueId)
+    {
+      try
+      {
+        return await _context.Organizations.FirstOrDefaultAsync(o => o.OrganizationUniqueId == organizationUniqueId);
+      }
+      catch (Exception ex)
+      {
+        _logger.LogError($"Error getting organization by unique Id - {ex.Message}");
+        WatchLogger.LogError(ex.ToString(), $"Error getting organization by unique Id - {ex.Message}");
         throw;
       }
     }

@@ -1,8 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using MongoDB.Driver.Linq;
 using SchoolManagementApi.Data;
-using SchoolManagementApi.Intefaces.Admin;
-using SchoolManagementApi.Intefaces.LoggerManager;
+using SchoolManagementApi.Interfaces.Admin;
+using SchoolManagementApi.Interfaces.LoggerManager;
 using SchoolManagementApi.Models;
 using WatchDog;
 
@@ -19,6 +19,14 @@ namespace SchoolManagementApi.Services.Admin
       {
         var dept = _context.Departments.Add(department);
         await _context.SaveChangesAsync();
+
+        var school = await _context.Schools.FirstOrDefaultAsync(s => s.SchoolId == department.SchoolId);
+        if (school != null && !school.Departments.Any(d => d.DepartmentId == department.DepartmentId))
+        {
+          school.Departments.Add(department);
+          _context.Schools.Update(school);
+          await _context.SaveChangesAsync();
+        }
         return dept.Entity;
       }
       catch (Exception ex)

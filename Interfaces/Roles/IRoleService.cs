@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
+using SchoolManagementApi.DTOs;
 
-namespace SchoolManagementApi.Intefaces.Roles
+namespace SchoolManagementApi.Interfaces.Roles
 {
   public interface IRoleService
   {
@@ -8,6 +9,7 @@ namespace SchoolManagementApi.Intefaces.Roles
     Task<bool> EditRole(string roleName, string editedRole);
     Task<bool> DeleteRole(string roleName);
     Task<List<IdentityRole>> GetRoleList();
-    Task<List<IdentityRole>> GetSelectedRoleList();
+    List<IdentityRole> GetSelectedRoleList();
+    Task<List<OrganizationUsersWithRole>> GetOrganizationUserWithRoles(string organizationUniqueId, string roleName);
   }
 }

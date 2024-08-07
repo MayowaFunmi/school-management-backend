@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using SchoolManagementApi.Models;
 using SchoolManagementApi.Models.DocumentModels;
+using SchoolManagementApi.Models.Lessons;
 using SchoolManagementApi.Models.UserModels;
 
 namespace SchoolManagementApi.Data
@@ -26,6 +27,11 @@ namespace SchoolManagementApi.Data
     public DbSet<SchoolTerm> SchoolTerms { get; set; }
     public DbSet<StudentsScores> StudentsScores { get; set; }
     public DbSet<ClassAttendance> ClassAttendances { get; set; }
+    public DbSet<LessonNote> LessonNotes { get; set; }
+    public DbSet<LessonPeriod> LessonPeriods { get; set; }
+    public DbSet<LessonPeriodTemplate> LessonPeriodTemplates { get; set; }
+    public DbSet<LessonNoteTemplate> LessonNoteTemplates { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
       base.OnModelCreating(modelBuilder);
@@ -108,6 +114,15 @@ namespace SchoolManagementApi.Data
       modelBuilder.Entity<SchoolTerm>()
         .HasIndex(e => e.Name)
         .IsUnique();
+
+      modelBuilder.Entity<LessonPeriod>()
+        .HasOne(d => d.LessonNotes)
+        .WithMany(s => s.Periods)
+        .OnDelete(DeleteBehavior.NoAction);
+
+      modelBuilder.Entity<LessonNote>()
+        .Property(b => b.CustomFields)
+        .HasColumnType("jsonb");
 
       // modelBuilder.Entity<ClassArms>()
       //   .HasOne(c => c.StudentClass)

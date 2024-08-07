@@ -1,7 +1,7 @@
 using SchoolManagementApi.DTOs;
 using SchoolManagementApi.Models.DocumentModels;
 
-namespace SchoolManagementApi.Intefaces.Uploads
+namespace SchoolManagementApi.Interfaces.Uploads
 {
   public interface IFileService
   {

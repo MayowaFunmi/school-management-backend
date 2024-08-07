@@ -5,19 +5,22 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SchoolManagementApi.Data;
 using SchoolManagementApi.DTOs;
-using SchoolManagementApi.Intefaces.Roles;
+using SchoolManagementApi.Interfaces.LoggerManager;
+using SchoolManagementApi.Interfaces.Roles;
 using SchoolManagementApi.Models.UserModels;
+using WatchDog;
 
 namespace SchoolManagementApi.Controllers
 {
   [ApiController]
   [Route("api/[controller]")]
-  public class RoleController(ApplicationDbContext context, IRoleService roleService, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager) : ControllerBase
+  public class RoleController(ApplicationDbContext context, IRoleService roleService, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, ILoggerManager logger) : ControllerBase
   {
     private readonly ApplicationDbContext _context = context;
     private readonly IRoleService _roleService = roleService;
     private readonly UserManager<ApplicationUser> _userManager = userManager;
     private readonly RoleManager<IdentityRole> _roleManager = roleManager;
+    private readonly ILoggerManager _logger = logger;
 
 		[HttpPost]
 		[Route("add-new-role")]
@@ -72,9 +75,9 @@ namespace SchoolManagementApi.Controllers
 
 		[HttpGet]
 		[Route("get-selected-roles")]
-		public async Task<GenericResponse> GetSelectedRoles()
+		public GenericResponse GetSelectedRoles()
 		{
-			var result = await _roleService.GetSelectedRoleList();
+			var result = _roleService.GetSelectedRoleList();
 			if (result.Count > 0)
 			{
 				return new GenericResponse()
@@ -258,6 +261,37 @@ namespace SchoolManagementApi.Controllers
 				Message = $"Users having role {roleName} retrieved successfully",
 				Data = usersInRole
 			};
+		}
+
+		[HttpGet]
+		[Route("get-organization-users-by-role/{organizationUniqueId}")]
+		[Authorize]
+		public async Task<GenericResponse> GetOrganizationUsersByRole(string organizationUniqueId, [FromQuery] string roleName)
+		{
+			try
+			{
+				if (string.IsNullOrEmpty(organizationUniqueId) || string.IsNullOrEmpty(roleName))
+				{
+					return new GenericResponse()
+					{
+						Status = HttpStatusCode.BadRequest.ToString(),
+						Message = "Role name or Organization Id cannot be empty",
+					};
+				}
+				var response = await _roleService.GetOrganizationUserWithRoles(organizationUniqueId, roleName);
+				return new GenericResponse()
+				{
+					Status = HttpStatusCode.OK.ToString(),
+					Message = "Organization users with roles retrieved successfully",
+					Data = response
+				};
+			}
+			catch (Exception ex)
+			{
+					_logger.LogError($"Error getting user with uniqueId - {ex.Message}");
+					WatchLogger.LogError(ex.ToString(), $"Error getting user with uniqueId - {ex.Message}");
+					throw;
+			}
 		}
   }
 }

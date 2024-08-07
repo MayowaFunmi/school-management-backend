@@ -3,7 +3,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SchoolManagementApi.Commands.Profiles;
-using SchoolManagementApi.Intefaces.Profiles;
+using SchoolManagementApi.Interfaces.Profiles;
 using SchoolManagementApi.Queries.Profiles;
 
 namespace SchoolManagementApi.Controllers

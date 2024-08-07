@@ -1,7 +1,7 @@
 using System.Net;
 using MediatR;
 using SchoolManagementApi.DTOs;
-using SchoolManagementApi.Intefaces.Admin;
+using SchoolManagementApi.Interfaces.Admin;
 using SchoolManagementApi.Models;
 
 namespace SchoolManagementApi.Commands.Admin

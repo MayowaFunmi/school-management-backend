@@ -1,6 +1,6 @@
 using SchoolManagementApi.Models.UserModels;
 
-namespace SchoolManagementApi.Intefaces.Profiles
+namespace SchoolManagementApi.Interfaces.Profiles
 {
   public interface IParentService
   {

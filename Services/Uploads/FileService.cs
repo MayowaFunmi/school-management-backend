@@ -2,8 +2,8 @@ using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
 using SchoolManagementApi.Data;
 using SchoolManagementApi.DTOs;
-using SchoolManagementApi.Intefaces.LoggerManager;
-using SchoolManagementApi.Intefaces.Uploads;
+using SchoolManagementApi.Interfaces.LoggerManager;
+using SchoolManagementApi.Interfaces.Uploads;
 using SchoolManagementApi.Models.DocumentModels;
 using WatchDog;
 

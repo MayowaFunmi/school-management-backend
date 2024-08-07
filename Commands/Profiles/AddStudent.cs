@@ -2,7 +2,7 @@ using System.Net;
 using MediatR;
 using SchoolManagementApi.Data;
 using SchoolManagementApi.DTOs;
-using SchoolManagementApi.Intefaces.Profiles;
+using SchoolManagementApi.Interfaces.Profiles;
 using SchoolManagementApi.Models.UserModels;
 using static SchoolManagementApi.Constants.DictionaryMaps;
 
@@ -12,22 +12,21 @@ namespace SchoolManagementApi.Commands.Profiles
   {
     public class AddStudentCommand : IRequest<GenericResponse>
     {
-      public required string UserId { get; set; }
-      public required string OrganizationUniqueId { get; set; }
-      public required string MiddleName { get; set; }
-      public required string AdmissionNumber { get; set; }
-      public required string AdmissionYear { get; set; }
-      public required string SchoolZoneId { get; set; }
-      public required string CurrentSchoolId { get; set; }
-      public required string DepartmentId { get; set; }
-      public required string StudentClassId { get; set; }
+      public string UserId { get; set; } = string.Empty;
+      public string MiddleName { get; set; } = string.Empty;
+      public string AdmissionNumber { get; set; } = string.Empty;
+      public string AdmissionYear { get; set; } = string.Empty;
+      public string SchoolZoneId { get; set; } = string.Empty;
+      public string CurrentSchoolId { get; set; } = string.Empty;
+      public string DepartmentId { get; set; } = string.Empty;
+      public string StudentClassId { get; set; } = string.Empty;
       public List<string> PreviousSchoolsIds { get; set; } = [];
-      public required string Gender { get; set; }      
-      public required DateTime DateOfBirth { get; set; }
-      public required int Age { get; set; }
-      public required string Address { get; set; }
-      public required string Religion { get; set; }
-      public required string ParentId { get; set; }
+      public string Gender { get; set; } = string.Empty;
+      public DateTime DateOfBirth { get; set; }
+      public int Age { get; set; }
+      public string Address { get; set; } = string.Empty;
+      public string Religion { get; set; } = string.Empty;
+      public string ParentId { get; set; } = string.Empty;
     }
 
     public class AddStudentHandler(ApplicationDbContext context, IStudentService studentService) : IRequestHandler<AddStudentCommand, GenericResponse>
@@ -39,16 +38,6 @@ namespace SchoolManagementApi.Commands.Profiles
       {
         try
         {
-          var organizationId = await _studentService.OrganizationExists(request.OrganizationUniqueId);
-          if (string.IsNullOrEmpty(organizationId))
-          {
-            return new GenericResponse
-            {
-              Status = HttpStatusCode.OK.ToString(),
-              Message = $"Organization not found"
-            };
-          }
-
           var student = await _studentService.StudentProfileExists(request.UserId);
           if (student)
           {
@@ -66,7 +55,6 @@ namespace SchoolManagementApi.Commands.Profiles
             if (user != null)
             {
               user.PercentageCompleted += 30;
-              user.OrganizationId = organizationId;
               await _context.SaveChangesAsync(cancellationToken);
             }
             
@@ -98,7 +86,6 @@ namespace SchoolManagementApi.Commands.Profiles
         return new Student
         {
           UserId = request.UserId,
-          OrganizationUniqueId = request.OrganizationUniqueId,
           MiddleName = request.MiddleName,
           AdmissionNumber = request.AdmissionNumber,
           AdmissionYear = request.AdmissionYear,

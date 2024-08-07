@@ -1,8 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using SchoolManagementApi.Data;
 using SchoolManagementApi.DTOs;
-using SchoolManagementApi.Intefaces.LoggerManager;
-using SchoolManagementApi.Intefaces.Profiles;
+using SchoolManagementApi.Interfaces.LoggerManager;
+using SchoolManagementApi.Interfaces.Profiles;
 using SchoolManagementApi.Models;
 using SchoolManagementApi.Models.DocumentModels;
 using SchoolManagementApi.Models.UserModels;
@@ -43,6 +43,7 @@ namespace SchoolManagementApi.Services.Profiles
           //.Include(t => t.Documents)
           .Include(t => t.CurrentSubject)
           //.Include(t => t.OtherSubjects)
+          .AsNoTracking()
           .FirstOrDefaultAsync();
 
         return teacher!;
@@ -79,6 +80,24 @@ namespace SchoolManagementApi.Services.Profiles
       }
     }
 
+    public async Task<List<ClassArms>> GetTeacherClasses(List<string> classArmIds)
+    {
+      try
+      {
+        return await _context.ClassArms
+          .Where(c => classArmIds.Contains(c.ClassArmId.ToString()))
+          .AsNoTracking()
+          .OrderBy(c => c.Name)
+          .ToListAsync();
+      }
+      catch (Exception ex)
+      {
+        _logger.LogError($"Error getting teacher's current classes - {ex.Message}");
+        WatchLogger.LogError(ex.ToString(), $"Error getting teacher's current classes - {ex.Message}");
+        throw;
+      }
+    }
+
     public async Task<string> OrganizationExists(string organizationUniqueId)
     {
       var organization = await _context.Organizations.FirstOrDefaultAsync(o => o.OrganizationUniqueId == organizationUniqueId);
@@ -111,15 +130,11 @@ namespace SchoolManagementApi.Services.Profiles
       return [];
     }
 
-    public async Task<TeachingStaff> TeachingStaffExists(string userId)
+    public async Task<bool> TeachingStaffExists(string userId)
     {
       try
       {
-        var teacher = await _context.TeachingStaffs.FirstOrDefaultAsync(t => t.UserId == userId);
-        if (teacher != null)
-          return teacher;
-        else
-          return null;
+        return await _context.TeachingStaffs.AsNoTracking().AnyAsync(t => t.UserId == userId);
       }
       catch (Exception ex)
       {

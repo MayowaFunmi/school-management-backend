@@ -1,8 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using SchoolManagementApi.Data;
 using SchoolManagementApi.DTOs;
-using SchoolManagementApi.Intefaces.LoggerManager;
-using SchoolManagementApi.Intefaces.Profiles;
+using SchoolManagementApi.Interfaces.LoggerManager;
+using SchoolManagementApi.Interfaces.Profiles;
 using SchoolManagementApi.Models.DocumentModels;
 using SchoolManagementApi.Models.UserModels;
 using WatchDog;
@@ -40,6 +40,7 @@ namespace SchoolManagementApi.Services.Profiles
           .Include(t => t.CurrentPostingZone)
           .Include(t => t.CurrentPostingSchool)
           //.Include(t => t.Documents)
+          .AsNoTracking()
           .FirstOrDefaultAsync();
 
         return staff!;
@@ -74,15 +75,11 @@ namespace SchoolManagementApi.Services.Profiles
       }
     }
 
-    public async Task<NonTeachingStaff> NonTeachingStaffExists(string userId)
+    public async Task<bool> NonTeachingStaffExists(string userId)
     {
       try
       {
-        var staff = await _context.NonTeachingStaffs.FirstOrDefaultAsync(t => t.UserId == userId);
-        if (staff != null)
-          return staff;
-        else
-          return null;
+        return await _context.NonTeachingStaffs.AsNoTracking().AnyAsync(t => t.UserId == userId);
       }
       catch (Exception ex)
       {

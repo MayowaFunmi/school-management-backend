@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using SchoolManagementApi.Data;
-using SchoolManagementApi.Intefaces.LoggerManager;
-using SchoolManagementApi.Intefaces.Profiles;
+using SchoolManagementApi.Interfaces.LoggerManager;
+using SchoolManagementApi.Interfaces.Profiles;
 using SchoolManagementApi.Models.UserModels;
 using WatchDog;
 
@@ -43,8 +43,9 @@ namespace SchoolManagementApi.Services.Profiles
         var parent = await _context.Parents
           .Include(p => p.User)
           .Include(p => p.StudentSchool)
+          .AsNoTracking()
           .FirstOrDefaultAsync(p => p.ParentId.ToString() == parentId);
-        return parent;
+        return parent!;
       }
       catch (Exception ex)
       {

@@ -1,8 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using SchoolManagementApi.Data;
 using SchoolManagementApi.DTOs;
-using SchoolManagementApi.Intefaces.Admin;
-using SchoolManagementApi.Intefaces.LoggerManager;
+using SchoolManagementApi.Interfaces.Admin;
+using SchoolManagementApi.Interfaces.LoggerManager;
 using SchoolManagementApi.Models;
 using SchoolManagementApi.Models.UserModels;
 using WatchDog;
@@ -14,13 +14,12 @@ namespace SchoolManagementApi.Services.Admin
     private readonly ApplicationDbContext _context = context;
     private readonly ILoggerManager _logger = logger;
 
-    public async Task<School> AddSchool(School school)
+    public async Task<bool> AddSchool(School school)
     {
       try
       {
-        var response = _context.Schools.Add(school);
-        await _context.SaveChangesAsync();
-        return response.Entity;
+        _context.Schools.Add(school);
+        return await _context.SaveChangesAsync() > 0;
       }
       catch (Exception ex)
       {
@@ -347,9 +346,10 @@ namespace SchoolManagementApi.Services.Admin
       try
       {
         return await _context.Schools
+          .Where(s => schoolIds.Contains(s.SchoolId.ToString()))
           .OrderBy(s => s.Name)
-        .Where(s => schoolIds.Contains(s.SchoolId.ToString()))
-        .ToListAsync();
+          .AsNoTracking()
+          .ToListAsync();
       }
       catch (Exception ex)
       {
@@ -397,6 +397,7 @@ namespace SchoolManagementApi.Services.Admin
       {
         return await _context.ClassArms
           .Where(d => d.SchoolId.ToString() == schoolId)
+          .AsNoTracking()
           .ToListAsync();
       }
       catch (Exception ex)

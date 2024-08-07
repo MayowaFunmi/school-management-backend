@@ -4,14 +4,16 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SchoolManagementApi.Commands.Admin;
 using SchoolManagementApi.DTOs;
-using SchoolManagementApi.Intefaces.Admin;
+using SchoolManagementApi.Interfaces.Admin;
 using SchoolManagementApi.Queries.Admin;
+using SchoolManagementApi.Queries.Profiles;
 
 namespace SchoolManagementApi.Controllers
 {
-  public class AdminController(IAdminService adminService, IMediator mediator) : BaseController
+  public class AdminController(IAdminService adminService, IOrganizationService organizationService, IMediator mediator) : BaseController
   {
     private readonly IAdminService _adminService = adminService;
+    private readonly IOrganizationService _organizationService = organizationService;
     private readonly IMediator _mediator = mediator;
 
     [HttpGet]
@@ -28,17 +30,32 @@ namespace SchoolManagementApi.Controllers
       };
     }
 
+    [HttpGet]
+    [Route("check-organization-status")]
+    [Authorize(Policy = "OrganizationAdmin")]
+    public async Task<IActionResult> CheckOrganizationDuplicate([FromQuery] string organizationName)
+    {
+      try
+      {
+        var response = await _organizationService.CheckOrganizationStatus(organizationName);
+        return response.Status == HttpStatusCode.OK.ToString()
+        ? Ok(response) : Conflict(response);
+      }
+      catch (Exception ex)
+      {
+        return StatusCode(500, $"An error occurred while processing your request - {ex.Message}");
+      }
+    }
+
     [HttpPost]
     [Route("create-organization")]
     [Authorize(Policy = "OrganizationAdmin")]
     public async Task<IActionResult> CreateOrganization(CreateOrganization.CreateOrganizationsCommand request)
     {
-      Console.WriteLine($"organization name = {request.OrganizationName}");
-      Console.WriteLine($"Admin Id = {request.AdminId}");
       try
       {
-        if (string.IsNullOrEmpty(request.OrganizationName) || string.IsNullOrEmpty(request.AdminId))
-          return BadRequest("Organization Name cannot be empty");
+        if (string.IsNullOrEmpty(request.OrganizationName) || string.IsNullOrEmpty(request.AdminId) || request.States.Count == 0)
+          return BadRequest("All fields are required");
 
         if (string.IsNullOrEmpty(CurrentUserId))
           return Unauthorized("You are not authenticated");
@@ -75,8 +92,13 @@ namespace SchoolManagementApi.Controllers
             AdminId = adminId
         };
         var response = await _mediator.Send(request);
-        return response.Status == HttpStatusCode.OK.ToString()
-          ? Ok(response) : BadRequest(response);
+        return response.Status switch
+        {
+            "Conflict" => Conflict(response),
+            "NotFound" => NotFound(response),
+            "BadRequest" => BadRequest(response),
+            _=> Ok(response)
+        };
       }
       catch (Exception ex)
       {
@@ -122,6 +144,47 @@ namespace SchoolManagementApi.Controllers
     }
 
     [HttpGet]
+    [Route("get-organization-by-id/{organizationId}")]
+    [Authorize]
+
+    public async Task<IActionResult> GetOrganizationById(string organizationId)
+    {
+      try
+      {
+        if (string.IsNullOrEmpty(organizationId))
+          return BadRequest("organization id cannot be empty");
+
+        var response = await _mediator.Send(new GetOrganizationById.GetOrganizationByIdQuery(organizationId));
+        return response.Status == HttpStatusCode.OK.ToString()
+          ? Ok(response) : NotFound(response);
+      }
+      catch (Exception ex)
+      {
+        return StatusCode(500, $"An error occurred while processing your request - {ex.Message}");
+      }
+    }
+    
+    [HttpGet]
+    [Route("get-organization-by-unique-id/{organizationUniqueid}")]
+
+    public async Task<IActionResult> GetOrganizationByUniqueId(string organizationUniqueid)
+    {
+      try
+      {
+        if (string.IsNullOrEmpty(organizationUniqueid))
+          return BadRequest("organization unique id cannot be empty");
+
+        var response = await _mediator.Send(new GetOrganizationByUniqueId.GetOrganizationByUniqueIdQuery(organizationUniqueid));
+        return response.Status == HttpStatusCode.OK.ToString()
+          ? Ok(response) : NotFound(response);
+      }
+      catch (Exception ex)
+      {
+        return StatusCode(500, $"An error occurred while processing your request - {ex.Message}");
+      }
+    }
+
+    [HttpGet]
     [Route("get-all-organizations")]
     [Authorize(Policy = "OwnerSuperAdmin")]
     public async Task<IActionResult> AllOrganizations()
@@ -138,7 +201,12 @@ namespace SchoolManagementApi.Controllers
     {
       try
       {
-        if (string.IsNullOrEmpty(request.OrganizationUniqueId) && string.IsNullOrEmpty(request.Name) && string.IsNullOrEmpty(request.AdminId) && string.IsNullOrEmpty(request.State))
+        if (string.IsNullOrEmpty(request.OrganizationUniqueId) ||
+           string.IsNullOrEmpty(request.Name) || 
+           string.IsNullOrEmpty(request.AdminId) ||
+            string.IsNullOrEmpty(request.State) ||
+            request.LocalGovtAreas.Count == 0
+          )
         {
           return BadRequest("Some fields cannot be empty");
         }
@@ -147,7 +215,10 @@ namespace SchoolManagementApi.Controllers
         {
           return Unauthorized("You are not an admin");
         }
-        request.AdminId = CurrentUserId!;
+
+        if (request.AdminId != CurrentUserId)
+          return Unauthorized("You are not an admin for this organization");
+        
         var response = await _mediator.Send(request);
         return response.Status == HttpStatusCode.OK.ToString()
           ? Ok(response) : BadRequest(response);
@@ -247,7 +318,7 @@ namespace SchoolManagementApi.Controllers
       {
         if (string.IsNullOrEmpty(CurrentUserId))
           return Unauthorized("You are not an admin");
-        if (string.IsNullOrEmpty(request.OrganizationUniqueId) || string.IsNullOrEmpty(request.ZoneId) || string.IsNullOrEmpty(request.Name) || string.IsNullOrEmpty(request.Address) || string.IsNullOrEmpty(request.State) || string.IsNullOrEmpty(request.LocalGovtArea))
+        if (string.IsNullOrEmpty(request.OrganizationUniqueId) || string.IsNullOrEmpty(request.ZoneId) || string.IsNullOrEmpty(request.Name) || string.IsNullOrEmpty(request.Address))
           return BadRequest("All fields are required");
         request.AdminId = CurrentUserId;
         var response = await _mediator.Send(request);
@@ -403,7 +474,7 @@ namespace SchoolManagementApi.Controllers
       {
         if (string.IsNullOrEmpty(CurrentUserId))
           return Unauthorized("You are not an admin");
-        if (string.IsNullOrEmpty(schoolId) || string.IsNullOrEmpty(request.Name))
+        if (string.IsNullOrEmpty(schoolId) || request.DepartmentNames.Count == 0)
           return BadRequest("All fields are required");
         
         request.AdminId = CurrentUserId;
@@ -554,6 +625,25 @@ namespace SchoolManagementApi.Controllers
         var response = await _mediator.Send(request);
         return response.Status == HttpStatusCode.OK.ToString()
           ? Ok(response) : BadRequest(response);
+      }
+      catch (Exception ex)
+      {
+        return StatusCode(500, $"An error occurred while processing your request - {ex.Message}");
+      }
+    }
+
+    [HttpGet]
+    [Route("get-user-by-id/{userId}")]
+    [Authorize]
+    public async Task<IActionResult> GetUserById(string userId)
+    {
+      try
+      {
+        if (string.IsNullOrEmpty(userId))
+          return BadRequest("user id cannot be empty");
+        var response = await _mediator.Send(new GetUserById.GetUserByIdQuery(userId));
+        return response.Status == HttpStatusCode.OK.ToString()
+          ? Ok(response) : NotFound(response);
       }
       catch (Exception ex)
       {

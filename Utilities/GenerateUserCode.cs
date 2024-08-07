@@ -28,6 +28,11 @@ namespace SchoolManagementApi.Utilities
       return $"USER-{UniqueId()}";
     }
 
+    public static string GenerateOrgUserUniqueId()
+    {
+      return $"ORG-USER-{UniqueId()}";
+    }
+
     public static string GenerateOrgUniqueId()
     {
       return $"ORG-{UniqueId()}";

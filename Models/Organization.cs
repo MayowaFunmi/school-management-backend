@@ -12,8 +12,9 @@ namespace SchoolManagementApi.Models
     [ForeignKey("AdminId")]
     [Required]
     public string AdminId { get; set; } = string.Empty;
-    public ApplicationUser? Admin { get; set; } = null!;
-    public List<Zone>? Zones { get; set; } = null!;
+    public ApplicationUser Admin { get; set; } = null!;
+    public List<Zone> Zones { get; set; } = null!;
+    public List<string> States { get; set; } = null!;
     public string Name { get; set; } = string.Empty;
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime UpdatedAt { get; set; }

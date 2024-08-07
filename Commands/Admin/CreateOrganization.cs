@@ -4,8 +4,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using SchoolManagementApi.Data;
 using SchoolManagementApi.DTOs;
-using SchoolManagementApi.Intefaces.Admin;
-using SchoolManagementApi.Intefaces.LoggerManager;
+using SchoolManagementApi.Interfaces.Admin;
+using SchoolManagementApi.Interfaces.LoggerManager;
 using SchoolManagementApi.Models;
 using SchoolManagementApi.Models.UserModels;
 using SchoolManagementApi.Utilities;
@@ -19,6 +19,7 @@ namespace SchoolManagementApi.Commands.Admin
     {
       public string OrganizationName { get; set; } = string.Empty;
       public string AdminId { get; set; } = string.Empty;
+      public List<string> States { get; set; } = [];
     }
 
     public class CreateOrganizationHandler(UserManager<ApplicationUser> userManager, ApplicationDbContext context, IOrganizationService organizationService, ILoggerManager logger) : IRequestHandler<CreateOrganizationsCommand, GenericResponse>
@@ -35,7 +36,7 @@ namespace SchoolManagementApi.Commands.Admin
           return new GenericResponse
           {
             Status = HttpStatusCode.BadRequest.ToString(),
-            Message = "Admin Id or Organization name cannot eb empty",
+            Message = "Admin Id or Organization name cannot be empty",
           };
         }
 
@@ -53,12 +54,14 @@ namespace SchoolManagementApi.Commands.Admin
               Message = "Admin not found",
             };
           }
+          
           // create orga instance
           var organization = new Organization
           {
             OrganizationUniqueId = GenerateUserCode.GenerateOrgUniqueId(),
             AdminId = request.AdminId,
-            Name = request.OrganizationName.ToLower()
+            Name = request.OrganizationName.ToLower(),
+            States = request.States
           };
           // use NLP to check if similar school exists to avoid duplicate entry
           var createdOrganization = await _organizationService.CreateOrganization(organization);
@@ -73,7 +76,7 @@ namespace SchoolManagementApi.Commands.Admin
           var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == request.AdminId, cancellationToken: cancellationToken);
           if (user != null) 
           {
-            user.OrganizationId = createdOrganization.OrganizationId.ToString();
+            user.OrganizationId = createdOrganization.OrganizationUniqueId;
             _context.Users.Update(user);
             await _context.SaveChangesAsync(cancellationToken);
             return new GenericResponse

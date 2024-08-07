@@ -4,7 +4,7 @@ using SchoolManagementApi.Models;
 using SchoolManagementApi.Models.UserModels;
 using static SchoolManagementApi.Queries.Students.GetStudentAttendance;
 
-namespace SchoolManagementApi.Intefaces.Admin
+namespace SchoolManagementApi.Interfaces.Admin
 {
   public interface IStudentClassServices
   {

@@ -1,6 +1,6 @@
 using SchoolManagementApi.Models;
 
-namespace SchoolManagementApi.Intefaces.Admin
+namespace SchoolManagementApi.Interfaces.Admin
 {
   public interface ISubjectService
   {

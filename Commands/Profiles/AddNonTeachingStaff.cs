@@ -2,7 +2,7 @@ using System.Net;
 using MediatR;
 using SchoolManagementApi.Data;
 using SchoolManagementApi.DTOs;
-using SchoolManagementApi.Intefaces.Profiles;
+using SchoolManagementApi.Interfaces.Profiles;
 using SchoolManagementApi.Models.UserModels;
 using static SchoolManagementApi.Constants.DictionaryMaps;
 
@@ -12,29 +12,28 @@ namespace SchoolManagementApi.Commands.Profiles
   {
     public class AddNonTeachingStaffCommand : IRequest<GenericResponse>
     {
-      public required string UserId { get; set; }
-      public required string OrganizationUniqueId { get; set; }
-      public string? Title { get; set; }
-      public string? MiddleName { get; set; }
-      public required string Gender { get; set; }
-      public required DateTime DateOfBirth { get; set; }
-      public required int Age { get; set; }
-      public required string StateOfOrigin { get; set; }
-      public required string LgaOfOrigin { get; set; }
-      public required string Address { get; set; }
-      public required string Religion { get; set; }
-      public string? MaritalStatus { get; set; }
-      public required string AboutMe { get; set; }
-      public required string Designation { get; set; }
-      public required int GradeLevel { get; set; }
-      public required int Step { get; set; }
-      public required DateTime FirstAppointment { get; set; }
-      public required int YearsInService { get; set; }
-      public required string Qualification { get; set; }
-      public required string Discipline { get; set; }
-      public required string CurrentPostingZoneId { get; set; }
-      public required string CurrentPostingSchoolId { get; set; }
-      public List<string>? PreviousSchoolsIds { get; set; }
+      public string UserId { get; set; } = string.Empty;
+      public string Title { get; set; } = string.Empty;
+      public string MiddleName { get; set; } = string.Empty;
+      public string Gender { get; set; } = string.Empty;
+      public DateTime DateOfBirth { get; set; }
+      public int Age { get; set; }
+      public string StateOfOrigin { get; set; } = string.Empty;
+      public string LgaOfOrigin { get; set; } = string.Empty;
+      public string Address { get; set; } = string.Empty;
+      public string Religion { get; set; } = string.Empty;
+      public string MaritalStatus { get; set; } = string.Empty;
+      public string AboutMe { get; set; } = string.Empty;
+      public string Designation { get; set; } = string.Empty;
+      public int GradeLevel { get; set; }
+      public int Step { get; set; }
+      public DateTime FirstAppointment { get; set; }
+      public int YearsInService { get; set; }
+      public string Qualification { get; set; } = string.Empty;
+      public string Discipline { get; set; } = string.Empty;
+      public string CurrentPostingZoneId { get; set; } = string.Empty;
+      public string CurrentPostingSchoolId { get; set; } = string.Empty;
+      public List<string> PreviousSchoolsIds { get; set; } = [];
     }
 
     public class AddNonTeachingStaffHandler(INonTeachingStaffInterface nonTeachingStaffInterface, ApplicationDbContext context) : IRequestHandler<AddNonTeachingStaffCommand, GenericResponse>
@@ -46,22 +45,12 @@ namespace SchoolManagementApi.Commands.Profiles
       {
         try
         {
-          // check if organization exists
-          var organizationId = await _nonTeachingStaffInterface.OrganizationExists(request.OrganizationUniqueId);
-          if (string.IsNullOrEmpty(organizationId))
-          {
-            return new GenericResponse
-            {
-              Status = HttpStatusCode.OK.ToString(),
-              Message = $"Organization not found"
-            };
-          }
           var checkStaffExists = await _nonTeachingStaffInterface.NonTeachingStaffExists(request.UserId);
-          if (checkStaffExists != null)
+          if (checkStaffExists)
           {
             return new GenericResponse
             {
-              Status = HttpStatusCode.OK.ToString(),
+              Status = HttpStatusCode.Conflict.ToString(),
               Message = $"Profile already exists"
             };
           }
@@ -74,7 +63,6 @@ namespace SchoolManagementApi.Commands.Profiles
             if (user != null)
             {
               user.PercentageCompleted += 30;
-              user.OrganizationId = organizationId;
               await _context.SaveChangesAsync(cancellationToken);
             }
             
@@ -82,7 +70,6 @@ namespace SchoolManagementApi.Commands.Profiles
             {
               Status = HttpStatusCode.OK.ToString(),
               Message = "Non Teaching Staff profile created sucessfully",
-              Data = createdStaff
             };
           }
           return new GenericResponse
@@ -106,9 +93,7 @@ namespace SchoolManagementApi.Commands.Profiles
         return new NonTeachingStaff
         {
           UserId = request.UserId,
-          OrganizationUniqueId = request.OrganizationUniqueId,
           Title = TitleMap.TitleDictionary.TryGetValue(request.Title!, out string? value) ? value : "Mr",
-          MiddleName = request.MiddleName!,
           Gender = TitleMap.GenderDictionary.TryGetValue(request.Gender!, out string? GenderValue) ? GenderValue : "Male",
           DateOfBirth = request.DateOfBirth,
           Age = request.Age,

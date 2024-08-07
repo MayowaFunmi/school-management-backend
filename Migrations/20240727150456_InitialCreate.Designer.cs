@@ -13,8 +13,8 @@ using SchoolManagementApi.Data;
 namespace SchoolManagementApi.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240713161606_UpdateModels")]
-    partial class UpdateModels
+    [Migration("20240727150456_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -322,6 +322,10 @@ namespace SchoolManagementApi.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<List<string>>("States")
+                        .IsRequired()
+                        .HasColumnType("text[]");
+
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -628,6 +632,10 @@ namespace SchoolManagementApi.Migrations
                     b.Property<int>("LoginCount")
                         .HasColumnType("integer");
 
+                    b.Property<string>("MiddleName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("NormalizedEmail")
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
@@ -736,14 +744,6 @@ namespace SchoolManagementApi.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("MiddleName")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("OrganizationUniqueId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<List<string>>("PreviousSchoolsIds")
                         .IsRequired()
                         .HasColumnType("text[]");
@@ -828,10 +828,6 @@ namespace SchoolManagementApi.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("Occupation")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("OrganizationUniqueId")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -1019,14 +1015,6 @@ namespace SchoolManagementApi.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("MaritalStatus")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("MiddleName")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("OrganizationUniqueId")
                         .IsRequired()
                         .HasColumnType("text");
 
