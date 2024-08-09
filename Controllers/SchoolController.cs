@@ -57,6 +57,25 @@ namespace SchoolManagementApi.Controllers
     }
 
     [HttpGet]
+    [Route("get-school-by-admin-id/{adminId}")]
+    [Authorize]
+    public async Task<IActionResult> GetSchoolByAdmin(string adminId)
+    {
+      try
+      {
+        if (string.IsNullOrEmpty(adminId))
+          return BadRequest("Admin Id cannot be null");
+        var response = await _mediator.Send(new GetSchoolByAdminId.GetSchoolByAdminIdQuery(adminId));
+          return response.Status == HttpStatusCode.OK.ToString()
+          ? Ok(response) : BadRequest(response);
+      }
+      catch (Exception ex)
+      {
+        return StatusCode(500, $"An error occurred while processing your request - {ex.Message}");
+      }
+    }
+
+    [HttpGet]
     [Route("get-subjects-by-id")]
     public async Task<IActionResult> SubjectsById([FromQuery] List<string> subjectIds)
     {
@@ -396,7 +415,7 @@ namespace SchoolManagementApi.Controllers
     [Authorize(Policy = "AdminOrganizationAdmin")]
     public async Task<IActionResult> AddSchoolSession([FromBody] SessionDto sessionDto)
     {
-      if (string.IsNullOrEmpty(sessionDto.Name) || string.IsNullOrEmpty(sessionDto.SchoolId))
+      if (string.IsNullOrEmpty(sessionDto.Name) || string.IsNullOrEmpty(sessionDto.SchoolUniqueId))
         return BadRequest("session name and school id cannot be empty");
       try
       {

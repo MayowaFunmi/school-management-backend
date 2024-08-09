@@ -47,7 +47,13 @@ namespace SchoolManagementApi.Services.Admin
             Name = armName,
             DepartmentId = departmentId ?? null
           });
-
+          await _context.SaveChangesAsync();
+        }
+        var school = await _context.Schools.FirstOrDefaultAsync(s => s.SchoolId == studentClass.SchoolId);
+        if (school != null && !school.StudentClasses.Any(s => s.StudentClassId == studentClass.StudentClassId))
+        {
+          school.StudentClasses.Add(studentClass);
+          _context.Schools.Update(school);
           await _context.SaveChangesAsync();
         }
         return true;
@@ -217,7 +223,7 @@ namespace SchoolManagementApi.Services.Admin
             StudentId = score.StudentId,
             StudentData = new StudentData
             {
-              UniqueId = score.Student.User!.UniqueId,
+              UniqueId = score.Student!.User!.UniqueId,
               LastName = score.Student.User.LastName,
               FirstName = score.Student.User.FirstName,
               MiddleName = score.Student.MiddleName,

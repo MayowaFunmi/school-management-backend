@@ -36,7 +36,7 @@ namespace SchoolManagementApi.Services.Admin
         var session = new SchoolSession
         {
           Name = sessionDto.Name,
-          SchoolId = sessionDto.SchoolId,
+          SchoolId = sessionDto.SchoolUniqueId,
           SessionStarts = sessionDto.SessionStarts,
           SessionEnds = sessionDto.SessionEnds
         };
@@ -318,7 +318,7 @@ namespace SchoolManagementApi.Services.Admin
       return await _context.Parents.Where(t => t.StudentSchoolId.ToString() == schoolId).CountAsync();
     }
 
-    public async Task<School> GetSchoolById(string schoolId)
+    public async Task<School?> GetSchoolById(string schoolId)
     {
       try
       {
@@ -330,6 +330,7 @@ namespace SchoolManagementApi.Services.Admin
           .ThenInclude(c => c.ClassArms)
           .Include(s => s.Subjects)
           .Where(s => s.SchoolId.ToString() == schoolId)
+          .AsNoTracking()
           .FirstOrDefaultAsync();
         return school;
       }
@@ -337,6 +338,29 @@ namespace SchoolManagementApi.Services.Admin
       {
         _logger.LogError($"Error getting school - {ex.Message}");
         WatchLogger.LogError(ex.ToString(), $"Error getting school - {ex.Message}");
+        throw;
+      }
+    }
+
+    public async Task<School?> GetSchoolByAdminId(string adminId)
+    {
+      try
+      {
+        var school = await _context.Schools
+          .Include(s => s.Admin)
+          .Include(s => s.Zone)
+          .Include(s => s.Departments)
+          .Include(s => s.StudentClasses)
+          .ThenInclude(c => c.ClassArms)
+          .Include(s => s.Subjects)
+          .AsNoTracking()
+          .FirstOrDefaultAsync(s => s.AdminId == adminId);
+        return school;
+      }
+      catch (Exception ex)
+      {
+        _logger.LogError($"Error getting school by admin id - {ex.Message}");
+        WatchLogger.LogError(ex.ToString(), $"Error getting school by admin id - {ex.Message}");
         throw;
       }
     }
