@@ -10,7 +10,7 @@ namespace SchoolManagementApi.Queries.Admin
     public class GetUserByUniqueIdQuery : IRequest<GenericResponse>
     {
       public string UniqueId { get; set; } = string.Empty;
-      public string RoleName { get; set; } = string.Empty;
+      public string? RoleName { get; set; }
     }
 
     public class GetUserByUniqueIdHandler(IAdminService adminService) : IRequestHandler<GetUserByUniqueIdQuery, GenericResponse>
