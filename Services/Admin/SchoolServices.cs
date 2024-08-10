@@ -1,3 +1,4 @@
+using System.Net;
 using Microsoft.EntityFrameworkCore;
 using SchoolManagementApi.Data;
 using SchoolManagementApi.DTOs;
@@ -29,7 +30,7 @@ namespace SchoolManagementApi.Services.Admin
       }
     }
 
-    public async Task<SchoolSession> AddSchoolSession(SessionDto sessionDto)
+    public async Task<GenericResponse> AddSchoolSession(SessionDto sessionDto)
     {
       try
       {
@@ -41,8 +42,20 @@ namespace SchoolManagementApi.Services.Admin
           SessionEnds = sessionDto.SessionEnds
         };
         _context.SchoolSessions.Add(session);
-        await _context.SaveChangesAsync();
-        return session;
+        var res = await _context.SaveChangesAsync();
+        if (res > 0)
+        {
+          return new GenericResponse
+          {
+            Status = HttpStatusCode.OK.ToString(),
+            Message = "School session added successfully"
+          };
+        }
+        return new GenericResponse
+        {
+          Status = HttpStatusCode.BadRequest.ToString(),
+          Message = "Failed to add school session"
+        };
       }
       catch (Exception ex)
       {
@@ -52,15 +65,56 @@ namespace SchoolManagementApi.Services.Admin
       }
     }
 
-    public async Task<bool> AddSchoolTerms(SchoolTermDto schoolTermDto)
+    public async Task<GenericResponse> AddSchoolTerms(SchoolTermDto schoolTermDto)
     {
       try
       {
+        Console.WriteLine($"dto service = {schoolTermDto.SchoolSessionId}");
+        var session = await _context.SchoolSessions.FirstOrDefaultAsync(s => s.SchoolSessionId.ToString() == schoolTermDto.SchoolSessionId);
+        if (session == null)
+        {
+          return new GenericResponse
+          {
+            Status = HttpStatusCode.NotFound.ToString(),
+            Message = "Session not found"
+          };
+        }
+        List<SchoolTerm> termsList = [];
+
         foreach (var term in schoolTermDto.SchoolTerms)
         {
-          await AddTerm(schoolTermDto.SchoolSessionId, term);
+          var schTerm = AddTerm(schoolTermDto.SchoolSessionId, term, session!);
+          if (schTerm != null && schTerm.Status == "BadRequest")
+          {
+            return new GenericResponse
+            {
+              Status = HttpStatusCode.BadRequest.ToString(),
+              Message = schTerm.Message
+            };
+          }
+          else if (schTerm != null && schTerm.Data != null)
+          {
+            termsList.Add((SchoolTerm)schTerm.Data);
+          }
         }
-        return true;
+        await _context.SchoolTerms.AddRangeAsync(termsList);
+        var res = await _context.SaveChangesAsync();
+        if (res > 0)
+        {
+          session.SchoolTerms.AddRange(termsList);
+          _context.SchoolSessions.Update(session);
+          await _context.SaveChangesAsync();
+          return new GenericResponse
+          {
+            Status = HttpStatusCode.OK.ToString(),
+            Message = "School terms created successfully"
+          };
+        }
+        return new GenericResponse
+        {
+          Status = HttpStatusCode.BadRequest.ToString(),
+          Message = "Failed to add school terms"
+        };
       }
       catch (Exception ex)
       {
@@ -70,40 +124,66 @@ namespace SchoolManagementApi.Services.Admin
       }
     }
 
-    private async Task<SchoolTerm> AddTerm(string sessionId, TermDto termDto)
+    private static GenericResponse? AddTerm(string sessionId, TermDto termDto, SchoolSession session)
     {
-      var checkTerm = await CheckTermDates(sessionId, termDto.TermStarts, termDto.TermEnds);
-      if (!checkTerm)
-        return null;
+      var checkTerm = CheckTermDates(session, termDto.TermStarts, termDto.TermEnds);
+      if (checkTerm.Status == "false")
+      {
+        return new GenericResponse
+        {
+          Status = "BadRequest",
+          Message = checkTerm.Message
+        };
+      }
+        
       var term = new SchoolTerm
       {
         SchoolSessionId = sessionId,
+        SchoolId = session.SchoolId,
         Name = termDto.TermName,
         TermStarts = termDto.TermStarts,
         TermEnds = termDto.TermEnds
       };
-      _context.SchoolTerms.Add(term);
-      await _context.SaveChangesAsync();
-      return term;
+      // _context.SchoolTerms.Add(term);
+      // await _context.SaveChangesAsync();
+      return new GenericResponse
+      {
+        Status = "Ok",
+        Data = term
+      };
     }
 
-    private async Task<bool> CheckTermDates(string sessionId, DateTime termStart, DateTime termEnd)
+    private static GenericResponse CheckTermDates(SchoolSession session, DateTime termStart, DateTime termEnd)
     {
-      var session = await _context.SchoolSessions.FirstOrDefaultAsync(s => s.SchoolSessionId.ToString() == sessionId);
       if (session == null)
-        return false;
-      try
       {
-        if (termStart < session.SessionStarts || termEnd > session.SessionEnds)
-          return false; // term start falls outside of session
-        if (termEnd < session.SessionStarts || termEnd < termStart || termEnd > session.SessionEnds)
-          return false; // Term end falls outside session or before term start
+        return new GenericResponse
+        {
+          Status = "false",
+          Message = "session does not exist"
+        };
       }
-      catch (FormatException)
+
+      if (termStart < session.SessionStarts || termEnd > session.SessionEnds)
       {
-        return false;
+        return new GenericResponse
+        {
+          Status = "false",
+          Message = "Either term start is less than session start or term end is greater than session end"
+        };
       }
-      return true;
+      if (termEnd < session.SessionStarts || termEnd < termStart || termStart > session.SessionEnds)
+      {
+        return new GenericResponse
+        {
+          Status = "false",
+          Message = "Either term end is less than session start or term end is less than term start or term start is greater than session end"
+        };
+      }
+      return new GenericResponse
+      {
+        Status = "true",
+      };
     }
 
     public async Task<List<School>> AllOrganizationScchools(string OrganizationUniqueId, int page, int pageSize)
@@ -405,6 +485,7 @@ namespace SchoolManagementApi.Services.Admin
       {
         return await _context.SchoolSessions
           .Where(s => s.SchoolId == schoolUniqueId)
+          .AsNoTracking()
           .ToListAsync();
       }
       catch (Exception ex)
@@ -502,7 +583,7 @@ namespace SchoolManagementApi.Services.Admin
       }
     }
 
-    public async Task<bool> OrganizationExists(string organizationUniqueId, string adminId)
+    public async Task<bool> OrganizationExists(string organizationUniqueId)
     {
       try
       {
@@ -510,7 +591,7 @@ namespace SchoolManagementApi.Services.Admin
           .Include(o => o.Admin)
           .Include(o => o.Zones)
           .FirstOrDefaultAsync(x => x.OrganizationUniqueId == organizationUniqueId);
-        if (organizationExists != null && organizationExists.AdminId == adminId)
+        if (organizationExists != null)
           return true;
         else
           return false;

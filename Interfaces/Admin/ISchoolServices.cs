@@ -7,7 +7,7 @@ namespace SchoolManagementApi.Interfaces.Admin
   public interface ISchoolServices
   {
     Task<bool> AddSchool(School school);
-    Task<bool> OrganizationExists(string organizationUniqueId, string adminId);
+    Task<bool> OrganizationExists(string organizationUniqueId);
     Task<School?> GetSchoolById(string schoolId);
     Task<School?> GetSchoolByAdminId(string AdminId);
     Task<List<School>> AllScchools(int page, int pageSize);
@@ -31,9 +31,9 @@ namespace SchoolManagementApi.Interfaces.Admin
     Task<List<ClassArms>> GetStudentClassesBySchoolId(string schoolId);
     Task<List<Parent>> GetSchoolParents(string schoolId);
     Task<List<School>> SearchSchool(string searchString);
-    Task<SchoolSession> AddSchoolSession(SessionDto sessionDto);
+    Task<GenericResponse> AddSchoolSession(SessionDto sessionDto);
     Task<List<SchoolSession>> GetSchoolSessions(string schoolUniqueId);
-    Task<bool> AddSchoolTerms(SchoolTermDto schoolTermDto);
+    Task<GenericResponse> AddSchoolTerms(SchoolTermDto schoolTermDto);
     Task<List<SchoolTerm>> GetSchoolTerms(string schoolId);
   }
 }
