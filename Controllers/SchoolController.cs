@@ -454,9 +454,7 @@ namespace SchoolManagementApi.Controllers
     public async Task<IActionResult> AddSchoolTerms([FromBody] SchoolTermDto schoolTermDto)
     {
       try
-      {
-        Console.WriteLine($"dto controller = {schoolTermDto.SchoolSessionId}");
-        
+      {        
         if (string.IsNullOrEmpty(schoolTermDto.SchoolSessionId) || schoolTermDto.SchoolTerms.Count == 0)
           return BadRequest("All fields are required");
         var response = await _schoolServices.AddSchoolTerms(schoolTermDto);

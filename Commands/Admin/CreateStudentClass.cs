@@ -37,13 +37,12 @@ namespace SchoolManagementApi.Commands.Admin
             {
               Status = HttpStatusCode.OK.ToString(),
               Message = "Student classes and class arms created successfully",
-              Data = studentClassesCreated
             };
           }
           return new GenericResponse
           {
             Status = HttpStatusCode.BadRequest.ToString(),
-            Message = "Failed to create Student classes and class arms",
+            Message = $"{request.Name} class already exists",
           };
         }
         catch (Exception ex)

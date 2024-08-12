@@ -503,6 +503,7 @@ namespace SchoolManagementApi.Services.Admin
         return await _context.ClassArms
           .Where(d => d.SchoolId.ToString() == schoolId)
           .AsNoTracking()
+          .OrderBy(c => c.Name)
           .ToListAsync();
       }
       catch (Exception ex)
