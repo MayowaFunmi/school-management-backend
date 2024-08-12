@@ -419,8 +419,13 @@ namespace SchoolManagementApi.Controllers
         return BadRequest("session name and school id cannot be empty");
       try
       {
-        var session = await _schoolServices.AddSchoolSession(sessionDto);
-        return Ok(session);
+        var response = await _schoolServices.AddSchoolSession(sessionDto);
+        return response.Status switch
+        {
+          "BadRequest" => BadRequest(response),
+          "NotFound" => NotFound(response),
+          _ => Ok(response)
+        };
       }
       catch (Exception ex)
       {
@@ -446,16 +451,19 @@ namespace SchoolManagementApi.Controllers
     [HttpPost]
     [Route("add-school-terms")]
     [Authorize(Policy = "AdminOrganizationAdmin")]
-    public async Task<IActionResult> AddSchoolTerms(SchoolTermDto schoolTermDto)
+    public async Task<IActionResult> AddSchoolTerms([FromBody] SchoolTermDto schoolTermDto)
     {
       try
-      {
-        var term = await _schoolServices.AddSchoolTerms(schoolTermDto);
-        if (term)
+      {        
+        if (string.IsNullOrEmpty(schoolTermDto.SchoolSessionId) || schoolTermDto.SchoolTerms.Count == 0)
+          return BadRequest("All fields are required");
+        var response = await _schoolServices.AddSchoolTerms(schoolTermDto);
+        return response.Status switch
         {
-          return Ok("Terms added successfully");
-        }
-        return BadRequest();
+            "BadRequest" => BadRequest(response),
+            "NotFound" => NotFound(response),
+            _ => Ok(response)
+        };
       }
       catch (Exception ex)
       {

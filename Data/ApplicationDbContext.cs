@@ -107,13 +107,13 @@ namespace SchoolManagementApi.Data
         .WithMany(s => s.StudentsScores)
         .OnDelete(DeleteBehavior.NoAction);
 
-      modelBuilder.Entity<SchoolSession>()
-        .HasIndex(e => e.Name)
-        .IsUnique();
+      // modelBuilder.Entity<SchoolSession>()
+      //   .HasIndex(e => e.Name)
+      //   .IsUnique();
 
-      modelBuilder.Entity<SchoolTerm>()
-        .HasIndex(e => e.Name)
-        .IsUnique();
+      // modelBuilder.Entity<SchoolTerm>()
+      //   .HasIndex(e => e.Name)
+      //   .IsUnique();
 
       modelBuilder.Entity<LessonPeriod>()
         .HasOne(d => d.LessonNotes)

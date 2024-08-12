@@ -24,7 +24,7 @@ namespace SchoolManagementApi.Commands.Admin
 
       public async Task<GenericResponse> Handle(CreateSchoolCommand request, CancellationToken cancellationToken)
       {
-        var organizationExists = await _schoolServices.OrganizationExists(request.OrganizationUniqueId!, request.AdminId!);
+        var organizationExists = await _schoolServices.OrganizationExists(request.OrganizationUniqueId);
         if (!organizationExists)
         {
           return new GenericResponse

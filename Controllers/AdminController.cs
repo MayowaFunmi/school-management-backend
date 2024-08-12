@@ -317,10 +317,9 @@ namespace SchoolManagementApi.Controllers
       try
       {
         if (string.IsNullOrEmpty(CurrentUserId))
-          return Unauthorized("You are not an admin");
+          return Unauthorized("You are not an organization admin");
         if (string.IsNullOrEmpty(request.OrganizationUniqueId) || string.IsNullOrEmpty(request.ZoneId) || string.IsNullOrEmpty(request.Name) || string.IsNullOrEmpty(request.Address))
           return BadRequest("All fields are required");
-        request.AdminId = CurrentUserId;
         var response = await _mediator.Send(request);
         return response.Status == HttpStatusCode.OK.ToString()
           ? Ok(response) : BadRequest(response);
