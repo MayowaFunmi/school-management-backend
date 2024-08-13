@@ -11,9 +11,7 @@ namespace SchoolManagementApi.Models.UserModels
     [ForeignKey("UserId")]
     public string UserId { get; set; } = string.Empty;
     public virtual ApplicationUser User { get; set; } = null!;
-    [ForeignKey("StudentSchoolId")]
-    public Guid StudentSchoolId { get; set; }
-    public virtual School StudentSchool { get; set; } = null!;
+    public string SchoolUniqueId { get; set; } = string.Empty;
     public string Title { get; set; } = string.Empty;
     public string ProfilePicture { get; set; } = string.Empty;
     public string Gender { get; set; } = string.Empty;

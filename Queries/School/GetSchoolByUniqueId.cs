@@ -7,20 +7,20 @@ using WatchDog;
 
 namespace SchoolManagementApi.Queries.School
 {
-  public class GetSchoolById
+  public class GetSchoolByUniqueId
   {
-    public record GetSchoolByIdQuery(string SchoolId) : IRequest<GenericResponse>;
+    public record GetSchoolByUniqueIdQuery(string SchoolUniqueId) : IRequest<GenericResponse>;
 
-    public class GetSchoolByIdHandler(ISchoolServices schoolServices, ILoggerManager logger) : IRequestHandler<GetSchoolByIdQuery, GenericResponse>
+    public class GetSchoolByUniqueIdHandler(ISchoolServices schoolServices, ILoggerManager logger) : IRequestHandler<GetSchoolByUniqueIdQuery, GenericResponse>
     {
       private readonly ISchoolServices _schoolServices = schoolServices;
       private readonly ILoggerManager _logger = logger;
 
-      public async Task<GenericResponse> Handle(GetSchoolByIdQuery request, CancellationToken cancellationToken)
+      public async Task<GenericResponse> Handle(GetSchoolByUniqueIdQuery request, CancellationToken cancellationToken)
       {
         try
         {
-          var school = await _schoolServices.GetSchoolById(request.SchoolId);
+          var school = await _schoolServices.GetSchoolByUniqueId(request.SchoolUniqueId);
           if (school != null)
           {
             return new GenericResponse
@@ -38,12 +38,12 @@ namespace SchoolManagementApi.Queries.School
         }
         catch (Exception ex)
         {
-          _logger.LogError($"Error getting school - {ex.Message}");
-          WatchLogger.LogError(ex.ToString(), $"Error getting school - {ex.Message}");
+          _logger.LogError($"Error getting school by school unique id - {ex.Message}");
+          WatchLogger.LogError(ex.ToString(), $"Error getting school by school unique id - {ex.Message}");
           return new GenericResponse
           {
             Status = HttpStatusCode.InternalServerError.ToString(),
-            Message = $"Error getting school- {ex.Message}",
+            Message = $"Error getting school by school unique id- {ex.Message}",
           };
         }
       }

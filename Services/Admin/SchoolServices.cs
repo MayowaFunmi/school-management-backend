@@ -374,9 +374,8 @@ namespace SchoolManagementApi.Services.Admin
       try
       {
         var parents = await _context.Parents
-          .Where(t => t.StudentSchoolId.ToString() == schoolId)
+          .Where(t => t.SchoolUniqueId == schoolId)
           .Include(t => t.User)
-          .Include(t => t.StudentSchool)
           .Skip((page - 1) * pageSize)
           .Take(pageSize)
           .OrderBy(s => s.User.LastName)
@@ -395,7 +394,7 @@ namespace SchoolManagementApi.Services.Admin
 
     public async Task<int> GetParentsInSchoolCount(string schoolId)
     {
-      return await _context.Parents.Where(t => t.StudentSchoolId.ToString() == schoolId).CountAsync();
+      return await _context.Parents.Where(t => t.SchoolUniqueId == schoolId).AsNoTracking().CountAsync();
     }
 
     public async Task<School?> GetSchoolById(string schoolId)
@@ -418,6 +417,30 @@ namespace SchoolManagementApi.Services.Admin
       {
         _logger.LogError($"Error getting school - {ex.Message}");
         WatchLogger.LogError(ex.ToString(), $"Error getting school - {ex.Message}");
+        throw;
+      }
+    }
+
+    public async Task<School?> GetSchoolByUniqueId(string schoolUniqueId)
+    {
+      try
+      {
+        var school = await _context.Schools
+          .Include(s => s.Admin)
+          .Include(s => s.Zone)
+          .Include(s => s.Departments)
+          .Include(s => s.StudentClasses)
+          .ThenInclude(c => c.ClassArms)
+          .Include(s => s.Subjects)
+          .Where(s => s.SchoolUniqueId == schoolUniqueId)
+          .AsNoTracking()
+          .FirstOrDefaultAsync();
+        return school;
+      }
+      catch (Exception ex)
+      {
+        _logger.LogError($"Error getting school by school unique id - {ex.Message}");
+        WatchLogger.LogError(ex.ToString(), $"Error getting school by school unique id - {ex.Message}");
         throw;
       }
     }
@@ -468,7 +491,7 @@ namespace SchoolManagementApi.Services.Admin
       try
       {
         return await _context.Parents
-        .Where(d => d.StudentSchoolId.ToString() == schoolId)
+        .Where(d => d.SchoolUniqueId == schoolId)
         .ToListAsync();
       }
       catch (Exception ex)

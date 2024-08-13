@@ -13,7 +13,7 @@ namespace SchoolManagementApi.Commands.Profiles
     public class AddParentCommand : IRequest<GenericResponse>
     {
       public string UserId { get; set; } = string.Empty;
-      public string StudentSchoolId { get; set; } = string.Empty;
+      public string SchoolUniqueId { get; set; } = string.Empty;
       public string Title { get; set; } = string.Empty;
       public string Gender { get; set; } = string.Empty;
       public string RelationshipType { get; set; } = string.Empty;
@@ -85,7 +85,7 @@ namespace SchoolManagementApi.Commands.Profiles
         return new Parent 
         {
           UserId = request.UserId,
-          StudentSchoolId = Guid.Parse(request.StudentSchoolId),
+          SchoolUniqueId = request.SchoolUniqueId,
           Title = TitleMap.TitleDictionary.TryGetValue(request.Title!, out string? value) ? value : "Mr",
           Gender = TitleMap.GenderDictionary.TryGetValue(request.Gender!, out string? GenderValue) ? GenderValue : "Male",
           RelationshipType = TitleMap.RelationshipDictionary.TryGetValue(request.RelationshipType!, out string? RelationshipValue) ? RelationshipValue : "father",
