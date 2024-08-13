@@ -32,7 +32,7 @@ namespace SchoolManagementApi.Queries.School
           }
           return new GenericResponse
           {
-            Status = HttpStatusCode.OK.ToString(),
+            Status = HttpStatusCode.BadRequest.ToString(),
             Message = "failed to get school",
           };
         }

@@ -57,6 +57,25 @@ namespace SchoolManagementApi.Controllers
     }
 
     [HttpGet]
+    [Route("get-school-by-unique-id/{schoolUniqueId}")]
+    [Authorize]
+    public async Task<IActionResult> GetSchoolByUniqueId(string schoolUniqueId)
+    {
+      try
+      {
+        if (string.IsNullOrEmpty(schoolUniqueId))
+          return BadRequest("School uniqueId cannot be null");
+        var response = await _mediator.Send(new GetSchoolByUniqueId.GetSchoolByUniqueIdQuery(schoolUniqueId));
+          return response.Status == HttpStatusCode.OK.ToString()
+          ? Ok(response) : BadRequest(response);
+      }
+      catch (Exception ex)
+      {
+        return StatusCode(500, $"An error occurred while processing your request - {ex.Message}");
+      }
+    }
+
+    [HttpGet]
     [Route("get-school-by-admin-id/{adminId}")]
     [Authorize]
     public async Task<IActionResult> GetSchoolByAdmin(string adminId)
@@ -82,7 +101,7 @@ namespace SchoolManagementApi.Controllers
       var subjects = await _schoolServices.GetSubjectsByIdList(subjectIds);
       if (subjects.Count == 0)
       {
-        return Ok(new GenericResponse
+        return NotFound(new GenericResponse
         {
           Status = HttpStatusCode.OK.ToString(),
           Message = "No Subject Found",
@@ -142,10 +161,10 @@ namespace SchoolManagementApi.Controllers
     }
 
     [HttpGet]
-    [Route("get-school-parents/{schoolId}")]
-    public async Task<IActionResult> SchoolParents(string schoolId)
+    [Route("get-school-parents/{schoolUniqueId}")]
+    public async Task<IActionResult> SchoolParents(string schoolUniqueId)
     {
-      var parents = await _schoolServices.GetSchoolParents(schoolId);
+      var parents = await _schoolServices.GetSchoolParents(schoolUniqueId);
       if (parents.Count == 0)
       {
         return Ok(new GenericResponse
@@ -351,11 +370,11 @@ namespace SchoolManagementApi.Controllers
     }
 
     [HttpGet]
-    [Route("get-parents-in-school/{schoolId}")]
+    [Route("get-parents-in-school/{schoolUniqueId}")]
     [Authorize]
-    public async Task<IActionResult> ParentsInSchool(string schoolId, [FromQuery] GetParents.GetParentsQuery request)
+    public async Task<IActionResult> ParentsInSchool(string schoolUniqueId, [FromQuery] GetParents.GetParentsQuery request)
     {
-      if (string.IsNullOrEmpty(schoolId))
+      if (string.IsNullOrEmpty(schoolUniqueId))
         return BadRequest("school Id must be specified.");
 
       // Check if both page and pageSize are specified
@@ -366,7 +385,7 @@ namespace SchoolManagementApi.Controllers
         return BadRequest("Page and PageSize must be greater than zero.");
 
       // Set the organizationId in the request object
-      request.SchoolId = schoolId;
+      request.SchoolUniqueId = schoolUniqueId;
       try
       {
         var response = await _mediator.Send(request);

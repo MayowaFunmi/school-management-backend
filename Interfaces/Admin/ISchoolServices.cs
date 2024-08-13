@@ -10,6 +10,7 @@ namespace SchoolManagementApi.Interfaces.Admin
     Task<bool> OrganizationExists(string organizationUniqueId);
     Task<School?> GetSchoolById(string schoolId);
     Task<School?> GetSchoolByAdminId(string AdminId);
+    Task<School?> GetSchoolByUniqueId(string schooluniqueId);
     Task<List<School>> AllScchools(int page, int pageSize);
     Task<int> AllSchoolCount();
     Task<int> AllOrganizationSchoolsCount(string OrganizationUniqueId);

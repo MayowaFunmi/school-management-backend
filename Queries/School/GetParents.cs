@@ -9,7 +9,7 @@ namespace SchoolManagementApi.Queries.School
   {
     public class GetParentsQuery : IRequest<PageDataResponse>
     {
-      public string SchoolId { get; set; } = string.Empty;
+      public string SchoolUniqueId { get; set; } = string.Empty;
       public int Page { get; set; } = 0;
       public int PageSize { get; set; } = 0;
     }
@@ -22,8 +22,8 @@ namespace SchoolManagementApi.Queries.School
       {
         try
         {
-          var parentsCount = await _schoolServices.GetParentsInSchoolCount(request.SchoolId);
-          var parents = await _schoolServices.GetParentsInSchool(request.SchoolId, request.Page, request.PageSize);
+          var parentsCount = await _schoolServices.GetParentsInSchoolCount(request.SchoolUniqueId);
+          var parents = await _schoolServices.GetParentsInSchool(request.SchoolUniqueId, request.Page, request.PageSize);
           var paginationMetaData = new PaginationMetaData(request.Page, request.PageSize, parentsCount);
 
           if (parents.Count != 0)
