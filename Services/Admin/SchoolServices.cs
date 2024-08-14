@@ -585,6 +585,22 @@ namespace SchoolManagementApi.Services.Admin
       }
     }
 
+    public async Task<List<ClassArms>> GetClassArmsByIdList(List<string> classArmIds)
+    {
+      try
+      {
+        return await _context.ClassArms
+        .Where(s => classArmIds.Contains(s.ClassArmId.ToString()))
+        .ToListAsync();
+      }
+      catch (Exception ex)
+      {
+        _logger.LogError($"Error getting list of class arms by ids - {ex.Message}");
+        WatchLogger.LogError(ex.ToString(), $"Error getting list of class arms by ids - {ex.Message}");
+        throw;
+      }
+    }
+
     public async Task<List<OrganizationData>> OrganizationData(string organizationUniqueId)
     {
       try
