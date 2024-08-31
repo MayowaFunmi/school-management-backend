@@ -28,6 +28,7 @@ namespace SchoolManagementApi.Interfaces.Admin
     Task<int> GetStudentsInSchoolCount(string schoolId);
     Task<List<School>> GetSchoolByIdList(List<string> schoolIds);
     Task<List<Subject>> GetSubjectsByIdList(List<string> subjectIds);
+    Task<List<ClassArms>> GetClassArmsByIdList(List<string> classArmIds);
     Task<List<Department>> GetDepartmentsBySchoolId(string schoolId);
     Task<List<ClassArms>> GetStudentClassesBySchoolId(string schoolId);
     Task<List<Parent>> GetSchoolParents(string schoolId);

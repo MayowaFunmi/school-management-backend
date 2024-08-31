@@ -117,6 +117,27 @@ namespace SchoolManagementApi.Controllers
     }
 
     [HttpGet]
+    [Route("get-class-arms-by-id")]
+    public async Task<IActionResult> ClassArmsById([FromQuery] List<string> classArmIds)
+    {
+      var classArms = await _schoolServices.GetClassArmsByIdList(classArmIds);
+      if (classArms.Count == 0)
+      {
+        return NotFound(new GenericResponse
+        {
+          Status = HttpStatusCode.OK.ToString(),
+          Message = "No class arm Found",
+        });
+      }
+      return Ok(new GenericResponse
+      {
+        Status = HttpStatusCode.OK.ToString(),
+        Message = "classArms retrieved from ids successfully",
+        Data = classArms
+      });
+    }
+
+    [HttpGet]
     [Route("get-school-departments/{schoolId}")]
     public async Task<IActionResult> SchoolDepartments(string schoolId)
     {
