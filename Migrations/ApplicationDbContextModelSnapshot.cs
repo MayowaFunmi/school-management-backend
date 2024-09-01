@@ -5,7 +5,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
-using SchoolManagementApi.DTOs;
 using SchoolManagementApi.Data;
 
 #nullable disable
@@ -166,6 +165,9 @@ namespace SchoolManagementApi.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<Guid?>("LessonNoteId")
+                        .HasColumnType("uuid");
+
                     b.Property<Guid?>("LessonNoteTemplateId")
                         .HasColumnType("uuid");
 
@@ -180,6 +182,8 @@ namespace SchoolManagementApi.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("LessonNoteId");
 
                     b.HasIndex("LessonNoteTemplateId");
 
@@ -348,10 +352,6 @@ namespace SchoolManagementApi.Migrations
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<List<CustomField>>("CustomFields")
-                        .IsRequired()
-                        .HasColumnType("jsonb");
 
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("timestamp with time zone");
@@ -1370,6 +1370,10 @@ namespace SchoolManagementApi.Migrations
 
             modelBuilder.Entity("SchoolManagementApi.DTOs.CustomField", b =>
                 {
+                    b.HasOne("SchoolManagementApi.Models.Lessons.LessonNote", null)
+                        .WithMany("CustomFields")
+                        .HasForeignKey("LessonNoteId");
+
                     b.HasOne("SchoolManagementApi.Models.Lessons.LessonNoteTemplate", null)
                         .WithMany("CustomFields")
                         .HasForeignKey("LessonNoteTemplateId");
@@ -1706,6 +1710,8 @@ namespace SchoolManagementApi.Migrations
 
             modelBuilder.Entity("SchoolManagementApi.Models.Lessons.LessonNote", b =>
                 {
+                    b.Navigation("CustomFields");
+
                     b.Navigation("Periods");
                 });
 

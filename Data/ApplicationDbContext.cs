@@ -115,9 +115,9 @@ namespace SchoolManagementApi.Data
         .WithMany(s => s.Periods)
         .OnDelete(DeleteBehavior.NoAction);
 
-      modelBuilder.Entity<LessonNote>()
-        .Property(b => b.CustomFields)
-        .HasColumnType("jsonb");
+      // modelBuilder.Entity<LessonNote>()
+      //   .Property(b => b.CustomFields)
+      //   .HasColumnType("jsonb");
 
       // modelBuilder.Entity<ClassArms>()
       //   .HasOne(c => c.StudentClass)

@@ -171,8 +171,8 @@ builder.Services
     builder.Services.AddWatchDogServices(opt => {
         opt.IsAutoClear = false;
         opt.ClearTimeSchedule = WatchDogAutoClearScheduleEnum.Monthly;
-        opt.SetExternalDbConnString = builder.Configuration.GetConnectionString(name:"MyDatabaseConnection");
-        opt.DbDriverOption = WatchDogDbDriverEnum.MSSQL;
+        opt.SetExternalDbConnString = builder.Configuration.GetConnectionString(name:"PostgresDatabase");
+        opt.DbDriverOption = WatchDogDbDriverEnum.PostgreSql;
     });
     
 var app = builder.Build();
