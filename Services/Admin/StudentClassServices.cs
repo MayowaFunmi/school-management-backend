@@ -16,18 +16,29 @@ namespace SchoolManagementApi.Services.Admin
     private readonly ApplicationDbContext _context = context;
     private readonly ILoggerManager _logger = logger;
 
-    public async Task<StudentClass?> AddStudentClass(StudentClass studentClass)
+    public async Task<StudentClass?> AddStudentClass(StudentClass studentClass, string adminId)
     {
       try
       {
-        var stdClass = await _context.StudentClasses
-                        .AsNoTracking()
-                        .AnyAsync(s => s.SchoolId == studentClass.SchoolId && s.Name == studentClass.Name);
-        if (stdClass)
-          return null;
+        var checkAdmin = await _context.Schools
+            .Where(s => s.SchoolId == studentClass.SchoolId && s.AdminId == adminId)
+            .Select(s => s.SchoolId)
+            .FirstOrDefaultAsync();
+
+        if (checkAdmin == Guid.Empty)
+            return null;
+
+        var stdClassExists = await _context.StudentClasses
+            .AsNoTracking()
+            .AnyAsync(s => s.SchoolId == studentClass.SchoolId && s.Name == studentClass.Name);
+
+        if (stdClassExists)
+            return null;
+
         var response = _context.StudentClasses.Add(studentClass);
         await _context.SaveChangesAsync();
         return response.Entity;
+
       }
       catch (Exception ex)
       {

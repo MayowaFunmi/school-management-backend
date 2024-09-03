@@ -468,7 +468,7 @@ namespace SchoolManagementApi.Services.Admin
       }
     }
 
-    public async Task<List<School>> GetSchoolByIdList(List<string> schoolIds)
+    public async Task<List<School>> GetSchoolByIdList(string schoolIds)
     {
       try
       {
@@ -569,7 +569,7 @@ namespace SchoolManagementApi.Services.Admin
       return await _context.Students.Where(t => t.CurrentSchoolId.ToString() == schoolId).CountAsync();
     }
 
-    public async Task<List<Subject>> GetSubjectsByIdList(List<string> subjectIds)
+    public async Task<List<Subject>> GetSubjectsByIdList(string subjectIds)
     {
       try
       {
@@ -585,12 +585,13 @@ namespace SchoolManagementApi.Services.Admin
       }
     }
 
-    public async Task<List<ClassArms>> GetClassArmsByIdList(List<string> classArmIds)
+    public async Task<List<ClassArms>> GetClassArmsByIdList(string classArmIds)
     {
       try
       {
         return await _context.ClassArms
         .Where(s => classArmIds.Contains(s.ClassArmId.ToString()))
+        .AsNoTracking()
         .ToListAsync();
       }
       catch (Exception ex)

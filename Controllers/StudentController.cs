@@ -18,7 +18,7 @@ namespace SchoolManagementApi.Controllers
     
     [HttpPost]
     [Route("create-student-profile")]
-    [Authorize(Policy = "Student")]
+    [Authorize(Policy = "StudentAdmin")]
     public async Task<IActionResult> CreateStudentProfile(AddStudent.AddStudentCommand request)
     {
       try

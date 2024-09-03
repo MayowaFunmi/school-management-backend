@@ -14,7 +14,7 @@ namespace SchoolManagementApi.Controllers
     
     [HttpPost]
     [Route("create-parent-profile")]
-    [Authorize(Policy = "Parent")]
+    [Authorize(Policy = "ParentAdmin")]
     public async Task<IActionResult> CreateParentProfile(AddParent.AddParentCommand request)
     {
       try

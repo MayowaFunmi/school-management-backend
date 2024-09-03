@@ -108,7 +108,7 @@ namespace SchoolManagementApi.Controllers
     [HttpGet]
     [Route("get-teacher-current-classes")]
     [Authorize]
-    public async Task<IActionResult> GetTeacherCurrentClasses([FromQuery] List<string> classArmIds)
+    public async Task<IActionResult> GetTeacherCurrentClasses([FromQuery] string classArmIds)
     {
       try
       {

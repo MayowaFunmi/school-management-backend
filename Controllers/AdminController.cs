@@ -502,10 +502,11 @@ namespace SchoolManagementApi.Controllers
         if (request.Arm < 1)
           return BadRequest("Class Arm must not be less than 1");
 
-        if (string.IsNullOrEmpty(schoolId) || string.IsNullOrEmpty(request.Name))
-          return BadRequest("School Id or Name must be set");
+        if (string.IsNullOrEmpty(schoolId) || string.IsNullOrEmpty(request.Name) || string.IsNullOrEmpty(CurrentUserId))
+          return BadRequest("School Id, Admin Id or Name must be set");
 
         request.SchoolId = schoolId;
+        request.AdminId = CurrentUserId;
         var response = await _mediator.Send(request);
           return response.Status == HttpStatusCode.OK.ToString()
           ? Ok(response) : BadRequest(response);
@@ -578,7 +579,7 @@ namespace SchoolManagementApi.Controllers
 
     [HttpPost]
     [Route("add-school-subject")]
-    [Authorize(Policy = "OwnerSuperAdmin")]
+    [Authorize(Policy = "AdminOrganizationAdmin")]
     public async Task<IActionResult> AddSubjects(AddSchoolSubject.AddSchoolSubjectCommand request)
     {
       try

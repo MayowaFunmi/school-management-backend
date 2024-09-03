@@ -17,9 +17,10 @@ namespace SchoolManagementApi.Controllers
     [HttpGet]
     [Route("get-schools-by-id")]
     [Authorize]
-    public async Task<IActionResult> SchoolsById([FromQuery] List<string> schoolIds)
+    public async Task<IActionResult> SchoolsById([FromQuery] string schoolIds)
     {
       var schools = await _schoolServices.GetSchoolByIdList(schoolIds);
+
       if (schools.Count == 0)
       {
         return Ok(new GenericResponse
@@ -96,9 +97,10 @@ namespace SchoolManagementApi.Controllers
 
     [HttpGet]
     [Route("get-subjects-by-id")]
-    public async Task<IActionResult> SubjectsById([FromQuery] List<string> subjectIds)
+    public async Task<IActionResult> SubjectsById([FromQuery] string subjectIds)
     {
       var subjects = await _schoolServices.GetSubjectsByIdList(subjectIds);
+
       if (subjects.Count == 0)
       {
         return NotFound(new GenericResponse
@@ -118,7 +120,7 @@ namespace SchoolManagementApi.Controllers
 
     [HttpGet]
     [Route("get-class-arms-by-id")]
-    public async Task<IActionResult> ClassArmsById([FromQuery] List<string> classArmIds)
+    public async Task<IActionResult> ClassArmsById([FromQuery] string classArmIds)
     {
       var classArms = await _schoolServices.GetClassArmsByIdList(classArmIds);
       if (classArms.Count == 0)

@@ -11,6 +11,7 @@ namespace SchoolManagementApi.Commands.Admin
     public class CreateStudentClassCommand : IRequest<GenericResponse>
     {
       public string? SchoolId { get; set; }
+      public string? AdminId { get; set; }
       public string? Name { get; set; }
       public int Arm { get; set; }
     }
@@ -29,7 +30,7 @@ namespace SchoolManagementApi.Commands.Admin
             Name = request.Name!,
             Arm = request.Arm
           };
-          var studentClassesCreated = await _studentClassServices.AddStudentClass(studentClasses);
+          var studentClassesCreated = await _studentClassServices.AddStudentClass(studentClasses, request.AdminId!);
           if (studentClassesCreated != null)
           {
             await _studentClassServices.GenerateClassArms(studentClasses);

@@ -14,7 +14,8 @@ namespace SchoolManagementApi.Configurations
       options.AddPolicy("Admin", policy => policy.RequireRole("Admin")); // school admin
       options.AddPolicy("OrganizationAdmin", policy => policy.RequireRole("OrganizationAdmin"));
       options.AddPolicy("AdminOrganizationAdmin", policy => policy.RequireRole("Admin", "OrganizationAdmin"));
-
+      options.AddPolicy("ParentAdmin", policy => policy.RequireRole("Admin", "Parent"));
+      options.AddPolicy("StudentAdmin", policy => policy.RequireRole("Admin", "Student"));
       options.AddPolicy("AdminSuperAdmin", policy => policy.RequireRole("Admin", "SuperAdmin"));
       options.AddPolicy("TeachingStaff", policy => policy.RequireRole("TeachingStaff"));
       options.AddPolicy("NonTeachingStaff", policy => policy.RequireRole("NonTeachingStaff"));

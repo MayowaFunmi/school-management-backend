@@ -80,15 +80,17 @@ namespace SchoolManagementApi.Services.Profiles
       }
     }
 
-    public async Task<List<ClassArms>> GetTeacherClasses(List<string> classArmIds)
+    public async Task<List<ClassArms>> GetTeacherClasses(string classArmIds)
     {
       try
       {
-        return await _context.ClassArms
+        var classes = await _context.ClassArms
           .Where(c => classArmIds.Contains(c.ClassArmId.ToString()))
           .AsNoTracking()
           .OrderBy(c => c.Name)
           .ToListAsync();
+
+        return classes;
       }
       catch (Exception ex)
       {
