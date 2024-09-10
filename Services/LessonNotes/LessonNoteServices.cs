@@ -33,8 +33,6 @@ namespace SchoolManagementApi.Services.LessonNotes
       try
       {
         var note = await _context.LessonNotes
-                                  .Include(l => l.Subject)
-                                  .Include(l => l.ClassArm)
                                   .AsNoTracking()
                                   .FirstOrDefaultAsync(l => l.Id.ToString() == lessonNoteId);
         return note;

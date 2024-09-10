@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using SchoolManagementApi.Data;
@@ -12,9 +13,11 @@ using SchoolManagementApi.Data;
 namespace SchoolManagementApi.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240903170909_UpdateLessonNote")]
+    partial class UpdateLessonNote
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -375,6 +378,9 @@ namespace SchoolManagementApi.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<Guid>("SubjectId1")
+                        .HasColumnType("uuid");
+
                     b.Property<string>("TeacherId")
                         .IsRequired()
                         .HasColumnType("text");
@@ -390,6 +396,8 @@ namespace SchoolManagementApi.Migrations
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("SubjectId1");
 
                     b.HasIndex("TeacherId");
 
@@ -1437,11 +1445,19 @@ namespace SchoolManagementApi.Migrations
 
             modelBuilder.Entity("SchoolManagementApi.Models.Lessons.LessonNote", b =>
                 {
+                    b.HasOne("SchoolManagementApi.Models.Subject", "Subject")
+                        .WithMany()
+                        .HasForeignKey("SubjectId1")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("SchoolManagementApi.Models.UserModels.ApplicationUser", "Teacher")
                         .WithMany()
                         .HasForeignKey("TeacherId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Subject");
 
                     b.Navigation("Teacher");
                 });
